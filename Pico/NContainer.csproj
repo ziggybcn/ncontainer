@@ -48,12 +48,13 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Addapter.cs" />
+    <Compile Include="AdapterProvider.cs" />
     <Compile Include="Container.cs" />
-    <Compile Include="FactoryAdapter.cs" />
-    <Compile Include="InstanceAdapter.cs" />
+    <Compile Include="FactoryAdapterProvider.cs" />
+    <Compile Include="InstanceAdapterProvider.cs" />
+    <Compile Include="MissingPublicConstructorException.cs" />
     <Compile Include="Port.cs" />
-    <Compile Include="ReflectionAdapter.cs" />
+    <Compile Include="ReflectionAdapterProvider.cs" />
     <Compile Include="UnitTest1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

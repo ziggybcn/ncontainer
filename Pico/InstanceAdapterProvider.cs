@@ -1,7 +1,7 @@
 namespace NContainer {
-    public class InstanceAdapter<T> : Adapter<T> {
+    internal class InstanceAdapterProvider<T> : AdapterProvider<T> {
         private readonly T _instance;
-        public InstanceAdapter(T instance) {
+        public InstanceAdapterProvider(T instance) {
             _instance = instance;
         }
 

@@ -2,7 +2,7 @@ using System.Linq;
 using System.Reflection;
 
 namespace NContainer {
-    internal class ReflectionAdapter<T> : Adapter<T>
+    internal class ReflectionAdapterProvider<T> : AdapterProvider<T>
     {
         private static readonly ConstructorInfo[] Constructors = typeof(T).GetConstructors();
 

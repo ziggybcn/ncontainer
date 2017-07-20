@@ -1,8 +1,7 @@
 ﻿using System;
 
 namespace NContainer {
-    public interface Adapter<out T>
-    {
+    internal interface AdapterProvider<out T> {
         T GrabInstance(Container container);
     }
 }
