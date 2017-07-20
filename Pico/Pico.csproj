@@ -50,6 +50,8 @@
   <ItemGroup>
     <Compile Include="Addapter.cs" />
     <Compile Include="Container.cs" />
+    <Compile Include="FactoryAdapter.cs" />
+    <Compile Include="InstanceAdapter.cs" />
     <Compile Include="Port.cs" />
     <Compile Include="ReflectionAdapter.cs" />
     <Compile Include="UnitTest1.cs" />

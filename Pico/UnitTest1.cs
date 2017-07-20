@@ -2,7 +2,7 @@
 using System.Collections;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace Pico
+namespace NContainer
 {
     [TestClass]
     public class UnitTest1
@@ -35,11 +35,28 @@ namespace Pico
         }
 
         [TestMethod]
+        public void TestMethod6() {
+            var c = new Container();
+            var myInstance = new TestClassA();
+            c.Register<TestInterfaceA>(myContainer=> new TestClassA());
+            var myVariable = c.GetInstance<TestInterfaceA>();
+            Assert.IsInstanceOfType(myVariable, typeof(TestClassA));
+        }
+
+        [TestMethod]
+        public void TestMethod5() {
+            var c = new Container();
+            var myInstance = new TestClassA();
+            c.Register<TestInterfaceA>(myInstance);
+            var myVariable = c.GetInstance<TestInterfaceA>();
+            Assert.AreSame(myVariable, myInstance);
+        }
+
+        [TestMethod]
         public void TestMethod4() {
             var c = new Container();
             c.Register<NonPublicConstructorClass>();
             Assert.ThrowsException<MissingPublicConstructorException>(()=> c.GetInstance<IEnumerable>());
-
         }
     }
 

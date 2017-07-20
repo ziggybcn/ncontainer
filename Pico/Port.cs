@@ -3,18 +3,28 @@ using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Pico {
+namespace NContainer {
     public class Port<T>:Port
     {
         private readonly ICollection<Adapter<T>> adapters = new List<Adapter<T>>();
 
-        public Port<T> RegisterAddapter<TA>() where TA:T {
-            Adapter<T> item = (Adapter<T>) new ReflectionAdapter<TA>();
+        public Port<T> RegisterAdapter<TA>() where TA:T {
+            var item = (Adapter<T>) new ReflectionAdapter<TA>();
             adapters.Add(item);
             return this;
         }
 
-       // public Port<T> RegisterAdapter
+        public Port<T> RegisterAdapter(T instance) {
+            var item = (Adapter<T>)new InstanceAdapter<T>(instance);
+            adapters.Add(item);
+            return this;
+        }
+
+        public Port<T> RegisterAdapter(Func<Container, T> factory) {
+            var item = (Adapter<T>)new FactoryAdapter<T>(factory);
+            adapters.Add(item);
+            return this;
+        }
 
         public Adapter<T> GetDefaultAddapter() => adapters.First();
     }

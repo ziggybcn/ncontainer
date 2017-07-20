@@ -7,7 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Threading;
 
-namespace Pico
+namespace NContainer
 {
     public class Container
     {
@@ -16,7 +16,7 @@ namespace Pico
         {
             var port = new Port<P>();
             ports.Add(typeof(P), port);
-            port.RegisterAddapter<A>();
+            port.RegisterAdapter<A>();
             return this;
         }
 
@@ -38,9 +38,17 @@ namespace Pico
         public Container Register<P>(P instance) {
             var port = new Port<P>();
             ports.Add(typeof(P), port);
-            port.RegisterAddapter(instance);
+            port.RegisterAdapter(instance);
             return this;
         }
+
+        public Container Register<P>(Func<Container,P> factory) {
+            var port = new Port<P>();
+            ports.Add(typeof(P), port);
+            port.RegisterAdapter(factory);
+            return this;
+        }
+
 
         private static readonly MethodInfo GetInstanceMethod =
             typeof(Container).GetMethods().First(m =>
