@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Reflection;
 
@@ -12,10 +13,11 @@ namespace NContainer {
                 throw new MissingPublicConstructorException($"No public constructor found for {typeof(T).Name}");
 
             var parameters = Constructors[0].GetParameters(); //We use first constructor
-            var myParams = parameters.Select(parameter => container.GetInstance(parameter.ParameterType));
-
+            var myParams = new object[parameters.Length];
+            for (var i = 0; i < parameters.Length; i++)
+                myParams[i] = container.GetInstance(parameters[i].ParameterType);
             try {
-                return (T) Constructors[0].Invoke(myParams.ToArray());
+                return (T) Constructors[0].Invoke(myParams);
             }
             catch (TargetInvocationException e) {
                 if (e.InnerException is UnresolvedInterfaceException)

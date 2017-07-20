@@ -35,10 +35,8 @@ namespace NContainer
 
         [TestMethod]
         public void MissingDependencyThrowsException() {
-
             Assert.ThrowsException<UnresolvedInterfaceException>(() => 
                 new Container().Register<DependantClass>().GetInstance<DependantInterface>());
-
 
         }
 
@@ -66,6 +64,26 @@ namespace NContainer
             c.Register<NonPublicConstructorClass>();
             Assert.ThrowsException<MissingPublicConstructorException>(()=> c.GetInstance<IEnumerable>());
         }
+
+        [TestMethod]
+        public void UnregisteredContractThrowsException() {
+            var c = new Container();
+            Assert.ThrowsException<UnresolvedInterfaceException>(() => c.GetInstance<IEnumerable>());
+        }
+
+
+        //[TestMethod]
+        //public void MeasureInstanceResolver() {
+        //    var c = new Container().Register<TestClassA>().Register<DependantClass>();
+        //    //var c = new Container().Register<TestInterfaceA>(new TestClassA()).Register<DependantClass>();
+        //    //var c = new Container().Register<DependantInterface>(container => new DependantClass(new TestClassA()));
+        //    for (var i = 0; i < 10000; i++)
+        //        for (var j = 0; j < 1000; j++)
+        //            c.GetInstance<DependantInterface>();
+        //}
+
+
+
     }
 
     public class NonPublicConstructorClass : IEnumerable {
@@ -92,7 +110,7 @@ namespace NContainer
     {
         public DependantClass(TestInterfaceA myTestClass)
         {
-            
+            if (myTestClass == null) throw new Exception("Expecting dependency to be instantiated!");
         }
     }
 

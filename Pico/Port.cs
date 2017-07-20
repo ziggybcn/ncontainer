@@ -10,23 +10,31 @@ namespace NContainer {
 
         public Port<T> RegisterReflectionAdapter<TA>() where TA:T {
             var item = (AdapterProvider<T>) new ReflectionAdapterProvider<TA>();
-            adapters.Add(item);
+            AddAdapter(item);
             return this;
         }
 
         public Port<T> RegisterInstanceAdapter(T instance) {
             var item = (AdapterProvider<T>) new InstanceAdapterProvider<T>(instance);
-            adapters.Add(item);
+            AddAdapter(item);
             return this;
         }
 
         public Port<T> RegisterFactoryAdapter(Func<Container, T> factory) {
-            var item = (AdapterProvider<T>) new FactoryAdapterProvider<T>(factory);
-            adapters.Add(item);
+            var item = (AdapterProvider<T>)new FactoryAdapterProvider<T>(factory);
+            AddAdapter(item);
             return this;
         }
 
-        public AdapterProvider<T> GetDefaultAddapter() => adapters.Last();
+        private void AddAdapter(AdapterProvider<T> item) {
+            currentAdapter = item;
+            //adapters.Add(item);
+        }
+
+        public AdapterProvider<T> GetDefaultAddapter() => currentAdapter; //adapters.Last();
+
+        private AdapterProvider<T> currentAdapter;
+
     }
 
     internal class Port {

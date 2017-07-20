@@ -60,7 +60,13 @@ namespace NContainer {
         /// </summary>
         /// <param name="contract">The interface</param>
         public object GetInstance(Type contract) {
-            var genericMethod = GetInstanceMethod.MakeGenericMethod(contract);
+            MethodInfo genericMethod;
+
+            if (GenericInstanceProviderMethod.TryGetValue(contract, out genericMethod))
+                return genericMethod.Invoke(this, null);
+
+            genericMethod = GetInstanceMethod.MakeGenericMethod(contract);
+            GenericInstanceProviderMethod.Add(contract,genericMethod);
             return genericMethod.Invoke(this, null);
         }
 
@@ -105,12 +111,10 @@ namespace NContainer {
                     typeof(Container).GetMethods().First(m =>
                 m.Name == "Register" && m.IsGenericMethod && m.GetGenericArguments().Length == 2);
 
+        private static readonly Dictionary<Type, MethodInfo> GenericInstanceProviderMethod =
+            new Dictionary<Type, MethodInfo>();
+
         #endregion
 
     }
-
-    public class UnresolvedInterfaceException : Exception {
-        internal UnresolvedInterfaceException(Type dependency):base($"No class provider was found for the {dependency.Name} interface") { }
-    }
-
 }
