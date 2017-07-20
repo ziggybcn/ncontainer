@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace Pico
@@ -9,34 +10,62 @@ namespace Pico
         [TestMethod]
         public void TestMethod1() {
             var c = new Container();
+            c.Register<TestInterfaceA, TestClassA>();
+            var myVariable = c.GetInstance<TestInterfaceA>();
+            Assert.IsInstanceOfType(myVariable, typeof(TestClassA));
+        }
+
+        [TestMethod]
+        public void TestMethod2()
+        {
+            var c = new Container();
             c.Register<TestClassA>();
             var myVariable = c.GetInstance<TestInterfaceA>();
-            myVariable.SayHello();
+            Assert.IsInstanceOfType(myVariable, typeof(TestClassA));
+        }
+
+        [TestMethod]
+        public void TestMethod3()
+        {
+            var c = new Container();
+            c.Register<TestClassA>();
+            c.Register<DependantClass>();
+            var myVariable = c.GetInstance<DependantInterface>();
+            Assert.IsInstanceOfType(myVariable, typeof(DependantClass));
+        }
+
+        [TestMethod]
+        public void TestMethod4() {
+            var c = new Container();
+            c.Register<NonPublicConstructorClass>();
+            Assert.ThrowsException<MissingPublicConstructorException>(()=> c.GetInstance<IEnumerable>());
+
         }
     }
 
+    public class NonPublicConstructorClass : IEnumerable {
+        private NonPublicConstructorClass() {
+        }
+
+        public IEnumerator GetEnumerator() {
+            throw new NotImplementedException();
+        }
+    }
 
     public class ExpectingInterfaceException : Exception
     {
         public ExpectingInterfaceException(string details):base(details) { }
-
     }
 
 
     internal class TestClassA: TestInterfaceA
     {
-        public TestClassA() {
-
-        }
-
         public void SayHello() => Console.WriteLine("Hello world");
-
-
     }
 
     internal class DependantClass : DependantInterface
     {
-        DependantClass(TestInterfaceA myTestClass)
+        public DependantClass(TestInterfaceA myTestClass)
         {
             
         }

@@ -1,50 +1,53 @@
 using System;
 using System.CodeDom;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.WindowsRuntime;
+using System.Threading;
 
 namespace Pico {
-    public class Container
-    {
-        public Container Register(Type adapter)
-        {
-            foreach (var cosa in adapter.GetInterfaces())
-                Register(adapter, cosa);
+    public class Container {
+
+        public Container Register<P, A>() where A : P {
+            var port = new Port<P>();
+            ports.Add(typeof(P), port);
+            port.RegisterAddapter<A>();
             return this;
         }
 
-        public Container Register<T>() {
-            return Register(typeof(T));
-        }
+        static MethodInfo registerPortAdapterMethod = typeof(Container).GetMethods().First(m =>
+            m.Name == "Register" && m.IsGenericMethod && m.GetGenericArguments().Length == 2);
 
-        public Container Register(Type adapter, Type port)
+        public Container Register<A>() 
         {
-            if (!port.IsInterface) throw new ExpectingInterfaceException("Expecting an interface type");
-            Port internalPort;
-            if (ports.ContainsKey(port)) {
-                internalPort = ports[port];
-            } else {
-                internalPort = new Port(port);
-                ports.Add(port,internalPort);  
+
+            foreach (var myType in typeof(A).GetInterfaces())
+            {
+                var genericMethod = registerPortAdapterMethod.MakeGenericMethod(myType,typeof(A));
+                genericMethod.Invoke(this, null); // No target, no arguments
             }
-            internalPort.RegisterAddapter(adapter);
             return this;
+        }
+
+        static MethodInfo getInstanceMethod = typeof(Container).GetMethods().First(m =>
+            m.Name == "GetInstance" && m.IsGenericMethod && m.GetGenericArguments().Length == 1);
+
+        public object GetInstance(Type contract) {
+                var genericMethod = getInstanceMethod.MakeGenericMethod(contract);
+                return genericMethod.Invoke(this, null); // No target, no arguments
         }
 
 
         public T GetInstance<T>() {
             var myType = typeof(T);
-            var port = ports[myType];
+            var port = ports[myType].GetTyped<T>();
             var adapter = port.GetDefaultAddapter();
-            var implementation = adapter.Implementation;
-            var item = Activator.CreateInstance(implementation);
-            return (T)item;
+            return adapter.GrabInstance(this);
         }
 
-        private Dictionary<Type, Port> ports = new Dictionary<Type,Port>();
-
-
-
+        private Dictionary<Type, Port> ports =  new Dictionary<Type, Port>();
+        
     }
 }
