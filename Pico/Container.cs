@@ -71,8 +71,15 @@ namespace NContainer {
         /// <typeparam name="T">The interface</typeparam>
         public T GetInstance<T>() {
             var myType = typeof(T);
-            var port = ports[myType].GetTyped<T>();
-            var adapter = port.GetDefaultAddapter();
+            AdapterProvider<T> adapter;
+            try {
+                var port = ports[myType].GetTyped<T>();
+                adapter = port.GetDefaultAddapter();
+            }
+            catch (KeyNotFoundException e) {
+                throw new UnresolvedInterfaceException(myType);
+            }
+            
             return adapter.GrabInstance(this);
         }
         #endregion
@@ -101,4 +108,9 @@ namespace NContainer {
         #endregion
 
     }
+
+    public class UnresolvedInterfaceException : Exception {
+        internal UnresolvedInterfaceException(Type dependency):base($"No class provider was found for the {dependency.Name} interface") { }
+    }
+
 }

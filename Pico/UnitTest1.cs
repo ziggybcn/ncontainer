@@ -8,7 +8,7 @@ namespace NContainer
     public class UnitTest1
     {
         [TestMethod]
-        public void TestMethod1() {
+        public void HappyPathInterfaceAndClassPair() {
             var c = new Container();
             c.Register<TestInterfaceA, TestClassA>();
             var myVariable = c.GetInstance<TestInterfaceA>();
@@ -16,7 +16,7 @@ namespace NContainer
         }
 
         [TestMethod]
-        public void TestMethod2()
+        public void HappyPathClassRegistration()
         {
             var c = new Container();
             c.Register<TestClassA>();
@@ -25,17 +25,25 @@ namespace NContainer
         }
 
         [TestMethod]
-        public void TestMethod3()
-        {
-            var c = new Container();
-            c.Register<TestClassA>();
-            c.Register<DependantClass>();
-            var myVariable = c.GetInstance<DependantInterface>();
-            Assert.IsInstanceOfType(myVariable, typeof(DependantClass));
+        public void HappyPathClassWithDependencies() {
+
+            Assert.IsInstanceOfType(
+                new Container().Register<TestClassA>().Register<DependantClass>().GetInstance<DependantInterface>(),
+                typeof(DependantClass));
+
         }
 
         [TestMethod]
-        public void TestMethod6() {
+        public void MissingDependencyThrowsException() {
+
+            Assert.ThrowsException<UnresolvedInterfaceException>(() => 
+                new Container().Register<DependantClass>().GetInstance<DependantInterface>());
+
+
+        }
+
+        [TestMethod]
+        public void HappyPathInterfaceWithFActoryMethod() {
             var c = new Container();
             var myInstance = new TestClassA();
             c.Register<TestInterfaceA>(myContainer=> new TestClassA());
@@ -44,7 +52,7 @@ namespace NContainer
         }
 
         [TestMethod]
-        public void TestMethod5() {
+        public void HappyPathSingleInstance() {
             var c = new Container();
             var myInstance = new TestClassA();
             c.Register<TestInterfaceA>(myInstance);
@@ -53,7 +61,7 @@ namespace NContainer
         }
 
         [TestMethod]
-        public void TestMethod4() {
+        public void MissingPublicConstructorThrowsException() {
             var c = new Container();
             c.Register<NonPublicConstructorClass>();
             Assert.ThrowsException<MissingPublicConstructorException>(()=> c.GetInstance<IEnumerable>());

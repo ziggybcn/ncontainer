@@ -14,7 +14,14 @@ namespace NContainer {
             var parameters = Constructors[0].GetParameters(); //We use first constructor
             var myParams = parameters.Select(parameter => container.GetInstance(parameter.ParameterType));
 
-            return (T)Constructors[0].Invoke(myParams.ToArray());
+            try {
+                return (T) Constructors[0].Invoke(myParams.ToArray());
+            }
+            catch (TargetInvocationException e) {
+                if (e.InnerException is UnresolvedInterfaceException)
+                    throw e.InnerException;                
+                throw;
+            }
 
         }
     }
