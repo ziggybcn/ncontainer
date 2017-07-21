@@ -36,7 +36,8 @@ namespace NContainer
         [TestMethod]
         public void MissingDependencyThrowsException() {
             Assert.ThrowsException<UnresolvedInterfaceException>(() => 
-                new Container().Register<DependantClass>().GetInstance<DependantInterface>());
+            new Container().Register<DependantClass>().GetInstance<DependantInterface>()
+            );
 
         }
 
