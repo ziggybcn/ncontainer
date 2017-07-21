@@ -80,7 +80,7 @@ namespace NContainer {
             AdapterProvider<T> adapter;
             try {
                 var port = ports[myType].GetTyped<T>();
-                adapter = port.GetDefaultAddapter();
+                adapter = port.Addapter;
             }
             catch (KeyNotFoundException e) {
                 throw new UnresolvedInterfaceException(myType);
