@@ -67,7 +67,15 @@ namespace NContainer {
 
             genericMethod = GetInstanceMethod.MakeGenericMethod(contract);
             GenericInstanceProviderMethod.Add(contract,genericMethod);
-            return genericMethod.Invoke(this, null);
+            try
+            {
+                return genericMethod.Invoke(this, null);
+            }
+            catch (TargetInvocationException e)
+            {
+                if (e.InnerException is UnresolvedInterfaceException) throw e.InnerException;
+                throw;
+            }
         }
 
 
