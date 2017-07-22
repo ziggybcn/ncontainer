@@ -58,7 +58,6 @@
     <Compile Include="DependantClass.cs" />
     <Compile Include="DependantInterface.cs" />
     <Compile Include="NonPublicConstructorClass.cs" />
-    <Compile Include="PerformanceTests.cs" />
     <Compile Include="TestClassA.cs" />
     <Compile Include="TestInterfaceA.cs" />
     <Compile Include="UnitTests.cs" />

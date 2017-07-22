@@ -1,26 +1,29 @@
 ﻿using NContainer;
-using NUnit.Framework;
+using NBench;
 
-namespace NContainerTests {
-    [TestFixture, Parallelizable, Category("Performance tests")]
+namespace NContainerTests {  
     public class PerformanceTests {
+
         private const int Iterations = 4000000;
 
-        [Test]
+        [PerfBenchmark(NumberOfIterations = 1,
+            RunMode = RunMode.Throughput,
+            TestMode = TestMode.Test,
+            SkipWarmups = true)]
+        [ElapsedTimeAssertion(MaxTimeMilliseconds = 2000)]
+
         public void MeasureReflectionInstanceResolver() {
             var c = new Container().Register<TestClassA>().Register<DependantClass>();
             for (var i = 0; i < Iterations; i++)
                 c.GetInstance<DependantInterface>();
         }
 
-        [Test]
         public void MeasureSingletoneDependencyInstanceResolver() {
             var c = new Container().Register<TestInterfaceA>(new TestClassA()).Register<DependantClass>();
             for (var i = 0; i < Iterations; i++)
                 c.GetInstance<DependantInterface>();
         }
 
-        [Test]
         public void MeasureSingletoneInstanceResolver() {
             var c = new Container().Register<TestInterfaceA>(new TestClassA());
             c.Register<DependantInterface>(new DependantClass(c.GetInstance<TestInterfaceA>()));
@@ -28,7 +31,6 @@ namespace NContainerTests {
                 c.GetInstance<DependantInterface>();
         }
 
-        [Test]
         public void MeasureFactoryInstanceResolver() {
             var c = new Container();
             c.Register<DependantInterface>(container => new DependantClass(container.GetInstance<TestInterfaceA>()));

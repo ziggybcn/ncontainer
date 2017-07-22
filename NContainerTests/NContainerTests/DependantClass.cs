@@ -1,7 +1,7 @@
 ﻿using System;
 
 namespace NContainerTests {
-    internal class DependantClass : DependantInterface
+    public class DependantClass : DependantInterface
     {
         public DependantClass(TestInterfaceA myTestClass)
         {
