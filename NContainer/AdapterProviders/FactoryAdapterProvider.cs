@@ -1,6 +1,6 @@
 using System;
 
-namespace NContainer {
+namespace NContainer.AdapterProviders {
     internal class FactoryAdapterProvider<T>:AdapterProvider<T> {
 
         private readonly Func<Container, T> _factory;

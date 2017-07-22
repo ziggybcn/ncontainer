@@ -2,85 +2,113 @@
 using System.Collections;
 using FluentAssertions;
 using NContainer;
+using NContainer.AdapterProviders;
 using NUnit.Framework;
 
 namespace NContainerTests {
-    [TestFixture, Parallelizable]
+    [TestFixture, Parallelizable, Category("Unit tests")]
     public class UnitTests {
         [Test]
         public void HappyPathInterfaceAndClassPair() {
-            var c = new Container();
-            c.Register<TestInterfaceA, TestClassA>();
-            c.GetInstance<TestInterfaceA>().Should().BeOfType<TestClassA>();
+            var container = new Container();
+            container.Register<TestInterfaceA, TestClassA>();
+            container.GetInstance<TestInterfaceA>().Should().BeOfType<TestClassA>();
         }
 
         [Test]
         public void HappyPathClassRegistration() {
-            var c = new Container();
-            c.Register<TestClassA>();
-            c.GetInstance<TestInterfaceA>().Should().BeOfType<TestClassA>();
+            var container = new Container();
+            container.Register<TestClassA>();
+            container.GetInstance<TestInterfaceA>().Should().BeOfType<TestClassA>();
         }
 
         [Test]
         public void HappyPathClassWithDependencies() {
-            var c = new Container();
-            c.Register<TestClassA>().Register<DependantClass>();
-            c.GetInstance<DependantInterface>().Should().BeOfType<DependantClass>();
+            var container = new Container();
+            container.Register<TestClassA>().Register<DependantClass>();
+            container.GetInstance<DependantInterface>().Should().BeOfType<DependantClass>();
         }
 
         [Test]
         public void MissingDependencyThrowsException() {
-            var c = new Container();
-            c.Register<DependantClass>();
-            Action getInstance = () => c.GetInstance<DependantInterface>();
+            var container = new Container();
+            container.Register<DependantClass>();
+            Action getInstance = () => container.GetInstance<DependantInterface>();
             getInstance.ShouldThrow<UnresolvedInterfaceException>();
         }
 
         [Test]
         public void HappyPathInterfaceWithFactoryMethod() {
-            var c = new Container();
-            c.Register<TestInterfaceA>(myContainer => new TestClassA());
-            c.GetInstance<TestInterfaceA>().Should().BeOfType<TestClassA>();
+            var container = new Container();
+            container.Register<TestInterfaceA>(myContainer => new TestClassA());
+            container.GetInstance<TestInterfaceA>().Should().BeOfType<TestClassA>();
         }
 
         [Test]
         public void HappyPathSingleInstance() {
-            var c = new Container();
+            var container = new Container();
             var myInstance = new TestClassA();
-            c.Register<TestInterfaceA>(myInstance);
-            c.GetInstance<TestInterfaceA>().Should().BeSameAs(myInstance);
+            container.Register<TestInterfaceA>(myInstance);
+            container.GetInstance<TestInterfaceA>().Should().BeSameAs(myInstance);
         }
 
         [Test]
         public void MultipleRequests() {
-            var c = new Container();
+            var container = new Container();
             var myInstance = new TestClassA();
-            c.Register<TestInterfaceA>(myInstance);
-            c.Register<TestInterfaceA>(myInstance);
-            var myVariable = c.GetInstance<TestInterfaceA>();
-            var myVariableb = c.GetInstance<TestInterfaceA>();
-            Assert.AreSame(myVariable, myVariableb);
+            container.Register<TestInterfaceA>(myInstance);
+            container.Register<TestInterfaceA>(myInstance);
+            var interfaceAVariable = container.GetInstance<TestInterfaceA>();
+            var anotherInterfaceAVariable = container.GetInstance<TestInterfaceA>();
+            interfaceAVariable.Should().BeSameAs(anotherInterfaceAVariable);
         }
 
         [Test]
-        public void IsRegisteredReturnsFalseForUnregisteredInterfaces() => 
-            new Container().IsRegistered<TestInterfaceA>().Should().BeFalse();
-     
+        public void ContainerInjectionIntoContainerConstructor() {
+            var parentContainer = new Container();
+            var myInstance = new TestClassA();
+            parentContainer.Register<TestInterfaceA>(myInstance);
+
+            var inheritedContainer = new Container(parentContainer);
+
+            inheritedContainer.GetInstance<TestInterfaceA>().Should().BeSameAs(myInstance);
+        }
+
         [Test]
-        public void IsRegisteredReturnsTrueForRegisteredInterfaces() =>
-            new Container().Register<TestInterfaceA>(new TestClassA()).IsRegistered<TestInterfaceA>().Should().BeTrue();
-       
+        public void ContainerInjectionIntoContainer() {
+            var parentContainer = new Container();
+            var myInstance = new TestClassA();
+            parentContainer.Register<TestInterfaceA>(myInstance);
+
+            var inheritedContainer = new Container();
+            inheritedContainer.ImportContainer(parentContainer);
+
+            inheritedContainer.GetInstance<TestInterfaceA>().
+                Should().BeSameAs(myInstance);
+        }
+
+        [Test]
+        public void IsRegisteredReturnsFalseForUnregisteredInterfaces() =>
+            new Container().IsRegistered<TestInterfaceA>().Should().BeFalse();
+
+        [Test]
+        public void IsRegisteredReturnsTrueForRegisteredInterfaces() {
+            new Container().Register<TestInterfaceA>(new TestClassA()).
+                IsRegistered<TestInterfaceA>().
+                Should().BeTrue();
+        }
+
         [Test]
         public void MissingPublicConstructorThrowsException() {
-            var c = new Container();
-            c.Register<NonPublicConstructorClass>();
-            Assert.Throws<MissingPublicConstructorException>(() => c.GetInstance<TestInterfaceA>());
+            new Container().Register<NonPublicConstructorClass>().
+                Invoking(container => container.GetInstance<TestInterfaceA>()).
+                ShouldThrow<MissingPublicConstructorException>();
         }
 
         [Test]
         public void UnregisteredContractThrowsException() {
-            var c = new Container();
-            Assert.Throws<UnresolvedInterfaceException>(() => c.GetInstance<IEnumerable>());
+            new Container().Invoking(container => container.GetInstance<IEnumerable>()).
+                ShouldThrow<UnresolvedInterfaceException>();
         }
     }
 }

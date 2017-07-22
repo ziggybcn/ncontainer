@@ -1,6 +1,7 @@
 using System;
+using NContainer.AdapterProviders;
 
-namespace NContainer {
+namespace NContainer.Ports {
     internal class Port<T>:Port
     {
         public void RegisterReflectionAdapter<TA>() where TA:T {

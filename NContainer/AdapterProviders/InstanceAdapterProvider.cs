@@ -1,4 +1,4 @@
-namespace NContainer {
+namespace NContainer.AdapterProviders {
     internal class InstanceAdapterProvider<T> : AdapterProvider<T> {
         private readonly T _instance;
         public InstanceAdapterProvider(T instance) {

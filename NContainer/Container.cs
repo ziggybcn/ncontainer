@@ -2,9 +2,21 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using NContainer.AdapterProviders;
+using NContainer.Ports;
 
 namespace NContainer {
     public class Container {
+
+        public Container() { }
+
+        /// <summary>
+        /// Use this constructor to import data from other container upon container creation.
+        /// </summary>
+        /// <param name="containerToImport"></param>
+        public Container(Container containerToImport) {
+            ImportContainer(containerToImport);
+        }
 
         #region Register ports and adapters
         /// <summary>
@@ -29,6 +41,13 @@ namespace NContainer {
             }
             return this;
         }
+
+        public Container ImportContainer(Container container) {
+            foreach (var p in container._ports.Keys)
+                _ports.Add(p, container._ports[p]);
+            return this;
+        }
+
 
         /// <summary>
         /// Pairs interface with a static instance of a class (useful for singleton-like needs)
@@ -63,7 +82,7 @@ namespace NContainer {
 
         #region obtain adapters for given ports
         /// <summary>
-        /// Returns an instance of a registered class. Notice the generic version of this method is prefered always.
+        /// Returns an instance of a registered class. Notice the generic version of this method is preferred always.
         /// </summary>
         /// <param name="contract">The interface</param>
         public object GetInstance(Type contract) {
@@ -74,12 +93,10 @@ namespace NContainer {
                 GenericInstanceProviderMethod.Add(contract, genericMethod);
             }
 
-            try
-            {
+            try {
                 return genericMethod.Invoke(this, null);
             }
-            catch (TargetInvocationException e)
-            {
+            catch (TargetInvocationException e)  {
                 if (e.InnerException != null) throw e.InnerException;
                 throw;
             }
@@ -122,11 +139,11 @@ namespace NContainer {
 
         private static readonly MethodInfo GetInstanceMethod =
                     typeof(Container).GetMethods().First(m =>
-                m.Name == "GetInstance" && m.IsGenericMethod && m.GetGenericArguments().Length == 1);
+                m.Name == "GetInstance" && m.IsGenericMethod && m.GetGenericArguments().Length == 1 && m.GetParameters().Length == 0);
 
         private static readonly MethodInfo RegisterPortAdapterMethod =
                     typeof(Container).GetMethods().First(m =>
-                m.Name == "Register" && m.IsGenericMethod && m.GetGenericArguments().Length == 2);
+                m.Name == "Register" && m.IsGenericMethod && m.GetGenericArguments().Length == 2 && m.GetParameters().Length==0);
 
         private static readonly Dictionary<Type, MethodInfo> GenericInstanceProviderMethod =
             new Dictionary<Type, MethodInfo>();

@@ -1,8 +1,8 @@
 using System.Reflection;
 
-namespace NContainer {
-    internal class ReflectionAdapterProvider<T> : AdapterProvider<T>
-    {
+namespace NContainer.AdapterProviders {
+    internal class ReflectionAdapterProvider<T>:AdapterProvider<T> {
+
         private static readonly ConstructorInfo[] Constructors = typeof(T).GetConstructors();
 
         public T GrabInstance(Container container) {
@@ -13,16 +13,8 @@ namespace NContainer {
             var parameters = Constructors[0].GetParameters(); //We use first constructor
             var myParams = new object[parameters.Length];
             for (var i = 0; i < parameters.Length; i++)
-                    myParams[i] = container.GetInstance(parameters[i].ParameterType);
-            //try {
-                return (T) Constructors[0].Invoke(myParams);
-            //}
-            /*catch (TargetInvocationException e) {
-                if (e.InnerException is UnresolvedInterfaceException)
-                    throw e.InnerException;                
-                throw;
-            }*/
-
+                myParams[i] = container.GetInstance(parameters[i].ParameterType);
+            return (T)Constructors[0].Invoke(myParams);
         }
     }
 }
