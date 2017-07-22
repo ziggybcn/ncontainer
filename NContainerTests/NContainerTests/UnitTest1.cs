@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NContainer;
 
-namespace NContainer
-{
+namespace NContainerTests {
     [TestClass]
-    public class UnitTest1
-    {
+    public class UnitTest1 {
         [TestMethod]
         public void HappyPathInterfaceAndClassPair() {
             var c = new Container();
@@ -16,8 +14,7 @@ namespace NContainer
         }
 
         [TestMethod]
-        public void HappyPathClassRegistration()
-        {
+        public void HappyPathClassRegistration() {
             var c = new Container();
             c.Register<TestClassA>();
             var myVariable = c.GetInstance<TestInterfaceA>();
@@ -35,16 +32,15 @@ namespace NContainer
 
         [TestMethod]
         public void MissingDependencyThrowsException() {
-            Assert.ThrowsException<UnresolvedInterfaceException>(() => 
+            Assert.ThrowsException<UnresolvedInterfaceException>(() =>
                 new Container().Register<DependantClass>().GetInstance<DependantInterface>());
 
         }
 
         [TestMethod]
-        public void HappyPathInterfaceWithFActoryMethod() {
+        public void HappyPathInterfaceWithFactoryMethod() {
             var c = new Container();
-            var myInstance = new TestClassA();
-            c.Register<TestInterfaceA>(myContainer=> new TestClassA());
+            c.Register<TestInterfaceA>(myContainer => new TestClassA());
             var myVariable = c.GetInstance<TestInterfaceA>();
             Assert.IsInstanceOfType(myVariable, typeof(TestClassA));
         }
@@ -88,7 +84,7 @@ namespace NContainer
         public void MissingPublicConstructorThrowsException() {
             var c = new Container();
             c.Register<NonPublicConstructorClass>();
-            Assert.ThrowsException<MissingPublicConstructorException>(()=> c.GetInstance<IEnumerable>());
+            Assert.ThrowsException<MissingPublicConstructorException>(() => c.GetInstance<TestInterfaceA>());
         }
 
         [TestMethod]
@@ -98,54 +94,43 @@ namespace NContainer
         }
 
 
-        //[TestMethod]
-        //public void MeasureInstanceResolver() {
-        //    var c = new Container().Register<TestClassA>().Register<DependantClass>();
-        //    //var c = new Container().Register<TestInterfaceA>(new TestClassA()).Register<DependantClass>();
-        //    //var c = new Container().Register<DependantInterface>(container => new DependantClass(new TestClassA()));
-        //    for (var i = 0; i < 10000; i++)
-        //        for (var j = 0; j < 1000; j++)
-        //            c.GetInstance<DependantInterface>();
-        //}
-
-
-
     }
 
-    public class NonPublicConstructorClass : IEnumerable {
-        private NonPublicConstructorClass() {
+    [TestClass]
+    public class PerformanceTests {
+        private const int Iterations = 4000000;
+
+        [TestMethod]
+        public void MeasureReflectionInstanceResolver() {
+            var c = new Container().Register<TestClassA>().Register<DependantClass>();
+            for (var i = 0; i < Iterations; i++)
+                c.GetInstance<DependantInterface>();
         }
 
-        public IEnumerator GetEnumerator() {
-            throw new NotImplementedException();
+        [TestMethod]
+        public void MeasureSingletoneDependencyInstanceResolver() {
+            var c = new Container().Register<TestInterfaceA>(new TestClassA()).Register<DependantClass>();
+            for (var i = 0; i < Iterations; i++)
+                c.GetInstance<DependantInterface>();
         }
-    }
 
-    public class ExpectingInterfaceException : Exception
-    {
-        public ExpectingInterfaceException(string details):base(details) { }
-    }
-
-
-    internal class TestClassA: TestInterfaceA
-    {
-        public void SayHello() => Console.WriteLine("Hello world");
-    }
-
-    internal class DependantClass : DependantInterface
-    {
-        public DependantClass(TestInterfaceA myTestClass)
-        {
-            if (myTestClass == null) throw new Exception("Expecting dependency to be instantiated!");
+        [TestMethod]
+        public void MeasureSingletoneInstanceResolver() {
+            var c = new Container().Register<TestInterfaceA>(new TestClassA());
+            c.Register<DependantInterface>(new DependantClass(c.GetInstance<TestInterfaceA>()));
+            for (var i = 0; i < Iterations; i++)
+                c.GetInstance<DependantInterface>();
         }
+
+        [TestMethod]
+        public void MeasureFactoryInstanceResolver() {
+            var c = new Container();
+            c.Register<DependantInterface>(container => new DependantClass(container.GetInstance<TestInterfaceA>()));
+            c.Register<TestInterfaceA>(container => new TestClassA());
+            for (var i = 0; i < Iterations; i++)
+                c.GetInstance<DependantInterface>();
+        }
+
     }
-
-    public interface TestInterfaceA {
-        void SayHello();
-    }
-
-    public interface DependantInterface { }
-
 }
-
 

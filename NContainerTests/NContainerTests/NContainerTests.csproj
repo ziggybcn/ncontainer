@@ -48,6 +48,11 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DependantClass.cs" />
+    <Compile Include="DependantInterface.cs" />
+    <Compile Include="NonPublicConstructorClass.cs" />
+    <Compile Include="TestClassA.cs" />
+    <Compile Include="TestInterfaceA.cs" />
     <Compile Include="UnitTest1.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
