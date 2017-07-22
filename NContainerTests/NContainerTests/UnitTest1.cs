@@ -59,6 +59,32 @@ namespace NContainer
         }
 
         [TestMethod]
+        public void MultipleRequests() {
+            var c = new Container();
+            var myInstance = new TestClassA();
+            c.Register<TestInterfaceA>(myInstance);
+            c.Register<TestInterfaceA>(myInstance);
+            var myVariable = c.GetInstance<TestInterfaceA>();
+            var myVariableb = c.GetInstance<TestInterfaceA>();
+            Assert.AreSame(myVariable, myVariableb);
+        }
+
+        [TestMethod]
+        public void IsRegisteredReturnsFalse() {
+            var c = new Container();
+            Assert.IsFalse(c.IsRegistered<TestInterfaceA>());
+        }
+
+        [TestMethod]
+        public void IsRegisteredReturnsTrueForRegisteredInterfaces() {
+            var c = new Container();
+            c.Register(new TestClassA());
+            Assert.IsFalse(c.IsRegistered<TestInterfaceA>());
+        }
+
+
+
+        [TestMethod]
         public void MissingPublicConstructorThrowsException() {
             var c = new Container();
             c.Register<NonPublicConstructorClass>();

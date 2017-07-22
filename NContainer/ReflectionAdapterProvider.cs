@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 
 namespace NContainer {
@@ -15,15 +16,15 @@ namespace NContainer {
             var parameters = Constructors[0].GetParameters(); //We use first constructor
             var myParams = new object[parameters.Length];
             for (var i = 0; i < parameters.Length; i++)
-                myParams[i] = container.GetInstance(parameters[i].ParameterType);
-            try {
+                    myParams[i] = container.GetInstance(parameters[i].ParameterType);
+            //try {
                 return (T) Constructors[0].Invoke(myParams);
-            }
-            catch (TargetInvocationException e) {
+            //}
+            /*catch (TargetInvocationException e) {
                 if (e.InnerException is UnresolvedInterfaceException)
                     throw e.InnerException;                
                 throw;
-            }
+            }*/
 
         }
     }

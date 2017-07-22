@@ -1,11 +1,7 @@
 using System;
-using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices.WindowsRuntime;
-using System.Threading;
 
 namespace NContainer {
     public class Container {
@@ -62,18 +58,18 @@ namespace NContainer {
         public object GetInstance(Type contract) {
             MethodInfo genericMethod;
 
-            if (GenericInstanceProviderMethod.TryGetValue(contract, out genericMethod))
-                return genericMethod.Invoke(this, null);
+            if (!GenericInstanceProviderMethod.TryGetValue(contract, out genericMethod)) {
+                genericMethod = GetInstanceMethod.MakeGenericMethod(contract);
+                GenericInstanceProviderMethod.Add(contract, genericMethod);
+            }
 
-            genericMethod = GetInstanceMethod.MakeGenericMethod(contract);
-            GenericInstanceProviderMethod.Add(contract,genericMethod);
             try
             {
                 return genericMethod.Invoke(this, null);
             }
             catch (TargetInvocationException e)
             {
-                if (e.InnerException is UnresolvedInterfaceException) throw e.InnerException;
+                if (e.InnerException != null) throw e.InnerException;
                 throw;
             }
         }
@@ -98,6 +94,8 @@ namespace NContainer {
         }
         #endregion
 
+
+        public bool IsRegistered<T>() => ports.ContainsKey(typeof(T));
 
         #region Private stuff and implementation detail
         private Port<TP> GetPortForAGivenContract<TP>() {
