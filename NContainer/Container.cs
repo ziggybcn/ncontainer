@@ -12,6 +12,7 @@ namespace NContainer {
         /// </summary>
         /// <typeparam name="TP">The interface</typeparam>
         /// <typeparam name="TA">The actual class that implements the interface</typeparam>
+        // ReSharper disable once UnusedMethodReturnValue.Global (allows for fluent syntax)
         public Container Register<TP, TA>() where TA : TP {
             GetPortForAGivenContract<TP>().RegisterReflectionAdapter<TA>();
             return this;
@@ -44,10 +45,20 @@ namespace NContainer {
         /// </summary>
         /// <typeparam name="TP">The interface</typeparam>
         /// <param name="factory">The factory method</param>
+        // ReSharper disable once UnusedMethodReturnValue.Global (allows for fluent syntax)
         public Container Register<TP>(Func<Container, TP> factory) {
             GetPortForAGivenContract<TP>().RegisterFactoryAdapter(factory);
             return this;
         }
+
+
+        /// <summary>
+        /// Return True if the given interface has been registered into this container
+        /// </summary>
+        /// <typeparam name="T">The interface for ask for</typeparam>
+        /// <returns></returns>
+        public bool IsRegistered<T>() => _ports.ContainsKey(typeof(T));
+
         #endregion
 
         #region obtain adapters for given ports
@@ -94,9 +105,6 @@ namespace NContainer {
         }
         #endregion
 
-
-        public bool IsRegistered<T>() => _ports.ContainsKey(typeof(T));
-
         #region Private stuff and implementation detail
         private Port<TP> GetPortForAGivenContract<TP>() {
             Port adapterProvider;
@@ -108,6 +116,9 @@ namespace NContainer {
         }
 
         private readonly Dictionary<Type, Port> _ports = new Dictionary<Type, Port>();
+        #endregion
+
+        #region Reflection catched generic-generated methods from JIT
 
         private static readonly MethodInfo GetInstanceMethod =
                     typeof(Container).GetMethods().First(m =>

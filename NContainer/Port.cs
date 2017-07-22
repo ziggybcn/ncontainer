@@ -3,22 +3,19 @@ using System;
 namespace NContainer {
     internal class Port<T>:Port
     {
-        public Port<T> RegisterReflectionAdapter<TA>() where TA:T {
+        public void RegisterReflectionAdapter<TA>() where TA:T {
             var item = (AdapterProvider<T>) new ReflectionAdapterProvider<TA>();
             SetAdapter(item);
-            return this;
         }
 
-        public Port<T> RegisterInstanceAdapter(T instance) {
+        public void RegisterInstanceAdapter(T instance) {
             var item = (AdapterProvider<T>) new InstanceAdapterProvider<T>(instance);
             SetAdapter(item);
-            return this;
         }
 
-        public Port<T> RegisterFactoryAdapter(Func<Container, T> factory) {
+        public void RegisterFactoryAdapter(Func<Container, T> factory) {
             var item = (AdapterProvider<T>)new FactoryAdapterProvider<T>(factory);
             SetAdapter(item);
-            return this;
         }
 
         private void SetAdapter(AdapterProvider<T> item) => _currentAdapter = item;
@@ -27,11 +24,10 @@ namespace NContainer {
 
         private AdapterProvider<T> _currentAdapter;
 
+        Port<T1> Port.GetTyped<T1>() => this as Port<T1>;
     }
 
-    internal class Port {
-        public Port<T> GetTyped<T>() {
-            return (Port<T>) this;
-        }
+    internal interface Port {
+        Port<T> GetTyped<T>();
     }
 }

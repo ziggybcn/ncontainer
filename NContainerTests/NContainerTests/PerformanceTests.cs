@@ -2,7 +2,7 @@
 using NUnit.Framework;
 
 namespace NContainerTests {
-    [TestFixture]
+    [TestFixture, Parallelizable]
     public class PerformanceTests {
         private const int Iterations = 4000000;
 

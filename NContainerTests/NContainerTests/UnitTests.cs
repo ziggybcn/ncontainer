@@ -5,7 +5,7 @@ using NContainer;
 using NUnit.Framework;
 
 namespace NContainerTests {
-    [TestFixture]
+    [TestFixture, Parallelizable]
     public class UnitTests {
         [Test]
         public void HappyPathInterfaceAndClassPair() {
@@ -34,7 +34,6 @@ namespace NContainerTests {
             c.Register<DependantClass>();
             Action getInstance = () => c.GetInstance<DependantInterface>();
             getInstance.ShouldThrow<UnresolvedInterfaceException>();
-
         }
 
         [Test]
@@ -66,9 +65,7 @@ namespace NContainerTests {
         [Test]
         public void IsRegisteredReturnsFalseForUnregisteredInterfaces() => 
             new Container().IsRegistered<TestInterfaceA>().Should().BeFalse();
-
-        
-
+     
         [Test]
         public void IsRegisteredReturnsTrueForRegisteredInterfaces() =>
             new Container().Register<TestInterfaceA>(new TestClassA()).IsRegistered<TestInterfaceA>().Should().BeTrue();
