@@ -25,10 +25,10 @@ namespace NContainer.Ports {
 
         private AdapterProvider<T> _currentAdapter;
 
-        Port<T1> Port.GetTyped<T1>() => this as Port<T1>;
+        Port<TI> Port.GetTyped<TI>() => this as Port<TI>;
     }
 
     internal interface Port {
-        Port<T> GetTyped<T>();
+        Port<TI> GetTyped<TI>();
     }
 }

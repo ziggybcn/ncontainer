@@ -124,12 +124,14 @@ namespace NContainer {
 
         #region Private stuff and implementation detail
         private Port<TP> GetPortForAGivenContract<TP>() {
-            Port adapterProvider;
-            if (_ports.TryGetValue(typeof(TP), out adapterProvider)) return (Port<TP>)adapterProvider;
 
-            var port = new Port<TP>();
-            _ports.Add(typeof(TP), port);
-            return port;
+            Port port;
+            if (_ports.TryGetValue(typeof(TP), out port)) return port.GetTyped<TP>();
+
+            var typedPort = new Port<TP>();
+            _ports.Add(typeof(TP), typedPort);
+            return typedPort;
+
         }
 
         private readonly Dictionary<Type, Port> _ports = new Dictionary<Type, Port>();
