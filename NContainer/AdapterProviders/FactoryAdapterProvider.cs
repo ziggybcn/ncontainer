@@ -1,8 +1,7 @@
 using System;
 
 namespace NContainer.AdapterProviders {
-    internal class FactoryAdapterProvider<T>:AdapterProvider<T> {
-
+    internal class FactoryAdapterProvider<T> : AdapterProvider<T> {
         private readonly Func<Container, T> _factory;
 
         public FactoryAdapterProvider(Func<Container, T> factory) {
@@ -10,6 +9,5 @@ namespace NContainer.AdapterProviders {
         }
 
         public T GrabInstance(Container container) => _factory.Invoke(container);
-
     }
 }

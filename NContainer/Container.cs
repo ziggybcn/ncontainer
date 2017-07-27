@@ -7,7 +7,6 @@ using NContainer.Ports;
 
 namespace NContainer {
     public class Container {
-
         public Container() { }
 
         /// <summary>
@@ -19,6 +18,7 @@ namespace NContainer {
         }
 
         #region Register ports and adapters
+
         /// <summary>
         /// Pairs an interface with a speciffic class.
         /// </summary>
@@ -48,7 +48,6 @@ namespace NContainer {
             return this;
         }
 
-
         /// <summary>
         /// Pairs interface with a static instance of a class (useful for singleton-like needs)
         /// </summary>
@@ -70,7 +69,6 @@ namespace NContainer {
             return this;
         }
 
-
         /// <summary>
         /// Return True if the given interface has been registered into this container
         /// </summary>
@@ -81,6 +79,7 @@ namespace NContainer {
         #endregion
 
         #region obtain adapters for given ports
+
         /// <summary>
         /// Returns an instance of a registered class. Notice the generic version of this method is preferred always.
         /// </summary>
@@ -96,12 +95,11 @@ namespace NContainer {
             try {
                 return genericMethod.Invoke(this, null);
             }
-            catch (TargetInvocationException e)  {
+            catch (TargetInvocationException e) {
                 if (e.InnerException != null) throw e.InnerException;
                 throw;
             }
         }
-
 
         /// <summary>
         /// Returns an instance of a registered class
@@ -117,40 +115,42 @@ namespace NContainer {
             catch (KeyNotFoundException) {
                 throw new UnresolvedInterfaceException(myType);
             }
-            
+
             return adapter.GrabInstance(this);
         }
+
         #endregion
 
         #region Private stuff and implementation detail
-        private Port<TP> GetPortForAGivenContract<TP>() {
 
+        private Port<TP> GetPortForAGivenContract<TP>() {
             Port port;
             if (_ports.TryGetValue(typeof(TP), out port)) return port.GetTyped<TP>();
 
             var typedPort = new Port<TP>();
             _ports.Add(typeof(TP), typedPort);
             return typedPort;
-
         }
 
         private readonly Dictionary<Type, Port> _ports = new Dictionary<Type, Port>();
+
         #endregion
 
         #region Reflection catched generic-generated methods from JIT
 
         private static readonly MethodInfo GetInstanceMethod =
-                    typeof(Container).GetMethods().First(m =>
-                m.Name == "GetInstance" && m.IsGenericMethod && m.GetGenericArguments().Length == 1 && m.GetParameters().Length == 0);
+            typeof(Container).GetMethods().First(m =>
+                m.Name == "GetInstance" && m.IsGenericMethod && m.GetGenericArguments().Length == 1 &&
+                m.GetParameters().Length == 0);
 
         private static readonly MethodInfo RegisterPortAdapterMethod =
-                    typeof(Container).GetMethods().First(m =>
-                m.Name == "Register" && m.IsGenericMethod && m.GetGenericArguments().Length == 2 && m.GetParameters().Length==0);
+            typeof(Container).GetMethods().First(m =>
+                m.Name == "Register" && m.IsGenericMethod && m.GetGenericArguments().Length == 2 &&
+                m.GetParameters().Length == 0);
 
         private static readonly Dictionary<Type, MethodInfo> GenericInstanceProviderMethod =
             new Dictionary<Type, MethodInfo>();
 
         #endregion
-
     }
 }

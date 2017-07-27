@@ -1,9 +1,12 @@
-﻿using NContainer;
+﻿#region imported references
+
 using NBench;
+using NContainer;
 
-namespace NContainerTests {  
+#endregion
+
+namespace NContainerTests {
     public class PerformanceTests {
-
         private const int Iterations = 4000000;
 
         [PerfBenchmark(NumberOfIterations = 1,
@@ -11,7 +14,6 @@ namespace NContainerTests {
             TestMode = TestMode.Test,
             SkipWarmups = true)]
         [ElapsedTimeAssertion(MaxTimeMilliseconds = 2000)]
-
         public void MeasureReflectionInstanceResolver() {
             var c = new Container().Register<TestClassA>().Register<DependantClass>();
             for (var i = 0; i < Iterations; i++)
@@ -38,6 +40,5 @@ namespace NContainerTests {
             for (var i = 0; i < Iterations; i++)
                 c.GetInstance<DependantInterface>();
         }
-
     }
 }
