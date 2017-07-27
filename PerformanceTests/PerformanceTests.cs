@@ -17,28 +17,28 @@ namespace NContainerTests {
         public void MeasureReflectionInstanceResolver() {
             var c = new Container().Register<TestClassA>().Register<DependantClass>();
             for (var i = 0; i < Iterations; i++)
-                c.GetInstance<DependantInterface>();
+                c.GetAdapter<DependantInterface>();
         }
 
         public void MeasureSingletoneDependencyInstanceResolver() {
             var c = new Container().Register<TestInterfaceA>(new TestClassA()).Register<DependantClass>();
             for (var i = 0; i < Iterations; i++)
-                c.GetInstance<DependantInterface>();
+                c.GetAdapter<DependantInterface>();
         }
 
         public void MeasureSingletoneInstanceResolver() {
             var c = new Container().Register<TestInterfaceA>(new TestClassA());
-            c.Register<DependantInterface>(new DependantClass(c.GetInstance<TestInterfaceA>()));
+            c.Register<DependantInterface>(new DependantClass(c.GetAdapter<TestInterfaceA>()));
             for (var i = 0; i < Iterations; i++)
-                c.GetInstance<DependantInterface>();
+                c.GetAdapter<DependantInterface>();
         }
 
         public void MeasureFactoryInstanceResolver() {
             var c = new Container();
-            c.Register<DependantInterface>(container => new DependantClass(container.GetInstance<TestInterfaceA>()));
+            c.Register<DependantInterface>(container => new DependantClass(container.GetAdapter<TestInterfaceA>()));
             c.Register<TestInterfaceA>(container => new TestClassA());
             for (var i = 0; i < Iterations; i++)
-                c.GetInstance<DependantInterface>();
+                c.GetAdapter<DependantInterface>();
         }
     }
 }

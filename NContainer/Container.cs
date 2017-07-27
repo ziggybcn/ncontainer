@@ -84,7 +84,7 @@ namespace NContainer {
         /// Returns an instance of a registered class. Notice the generic version of this method is preferred always.
         /// </summary>
         /// <param name="contract">The interface</param>
-        public object GetInstance(Type contract) {
+        public object GetAdapter(Type contract) {
             MethodInfo genericMethod;
 
             if (!GenericInstanceProviderMethod.TryGetValue(contract, out genericMethod)) {
@@ -105,7 +105,7 @@ namespace NContainer {
         /// Returns an instance of a registered class
         /// </summary>
         /// <typeparam name="T">The interface</typeparam>
-        public T GetInstance<T>() {
+        public T GetAdapter<T>() {
             var myType = typeof(T);
             AdapterProvider<T> adapter;
             try {
@@ -118,7 +118,7 @@ namespace NContainer {
 
             return adapter.GrabInstance(this);
         }
-
+        
         #endregion
 
         #region Private stuff and implementation detail
@@ -140,7 +140,7 @@ namespace NContainer {
 
         private static readonly MethodInfo GetInstanceMethod =
             typeof(Container).GetMethods().First(m =>
-                m.Name == "GetInstance" && m.IsGenericMethod && m.GetGenericArguments().Length == 1 &&
+                m.Name == "GetAdapter" && m.IsGenericMethod && m.GetGenericArguments().Length == 1 &&
                 m.GetParameters().Length == 0);
 
         private static readonly MethodInfo RegisterPortAdapterMethod =
