@@ -1,3 +1,4 @@
 ﻿namespace NContainerTests {
-    public interface DependantInterface { }
+    public interface DependantInterface {
+    }
 }

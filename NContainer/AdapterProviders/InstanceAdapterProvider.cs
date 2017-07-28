@@ -1,4 +1,10 @@
+using System.Diagnostics;
+
 namespace NContainer.AdapterProviders {
+#if !DEBUG
+
+    [DebuggerStepThrough]
+#endif
     internal class InstanceAdapterProvider<T> : AdapterProvider<T> {
         private readonly T _instance;
 
@@ -6,6 +12,8 @@ namespace NContainer.AdapterProviders {
             _instance = instance;
         }
 
-        public T GrabInstance(Container container) => _instance;
+        public T GrabInstance(Container container) {
+            return _instance;
+        }
     }
 }

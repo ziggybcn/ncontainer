@@ -1,11 +1,18 @@
 using System;
+using System.Diagnostics;
 using NContainer.AdapterProviders;
 
 namespace NContainer.Ports {
+#if !DEBUG
+
+    [DebuggerStepThrough]
+#endif
     internal class Port<T> : Port {
         public AdapterProvider<T> Addapter { get; private set; }
 
-        Port<TI> Port.GetTyped<TI>() => this as Port<TI>;
+        Port<TI> Port.GetTyped<TI>() {
+            return this as Port<TI>;
+        }
 
         public void RegisterReflectionAdapter<TA>() where TA : T {
             var item = (AdapterProvider<T>) new ReflectionAdapterProvider<TA>();

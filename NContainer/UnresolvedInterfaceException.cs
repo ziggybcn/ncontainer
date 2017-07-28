@@ -1,7 +1,14 @@
+using System;
+using System.Diagnostics;
 
 namespace NContainer {
-    public class UnresolvedInterfaceException : System.Exception {
-        internal UnresolvedInterfaceException(System.Type dependency) : base(
-            $"No class provider was found for the {dependency.Name} interface") { }
+#if !DEBUG
+
+    [DebuggerStepThrough]
+#endif
+    public class UnresolvedInterfaceException : Exception {
+        internal UnresolvedInterfaceException(Type dependency) : base(
+            $"No class provider was found for the {dependency.Name} interface") {
+        }
     }
 }

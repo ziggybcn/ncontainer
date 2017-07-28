@@ -1,13 +1,19 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using NContainer.AdapterProviders;
 using NContainer.Ports;
 
 namespace NContainer {
+#if !DEBUG
+
+    [DebuggerStepThrough]
+#endif
     public class Container {
-        public Container() { }
+        public Container() {
+        }
 
         /// <summary>
         /// Use this constructor to import data from other container upon container creation.
@@ -74,7 +80,9 @@ namespace NContainer {
         /// </summary>
         /// <typeparam name="T">The interface for ask for</typeparam>
         /// <returns></returns>
-        public bool IsRegistered<T>() => _ports.ContainsKey(typeof(T));
+        public bool IsRegistered<T>() {
+            return _ports.ContainsKey(typeof(T));
+        }
 
         #endregion
 
@@ -84,6 +92,7 @@ namespace NContainer {
         /// Returns an instance of a registered class. Notice the generic version of this method is preferred always.
         /// </summary>
         /// <param name="contract">The interface</param>
+        [DebuggerStepThrough]
         public object GetAdapter(Type contract) {
             MethodInfo genericMethod;
 
@@ -91,13 +100,11 @@ namespace NContainer {
                 genericMethod = GetInstanceMethod.MakeGenericMethod(contract);
                 GenericInstanceProviderMethod.Add(contract, genericMethod);
             }
-
             try {
                 return genericMethod.Invoke(this, null);
             }
-            catch (TargetInvocationException e) {
-                if (e.InnerException != null) throw e.InnerException;
-                throw;
+            catch (TargetInvocationException e) when (e.InnerException != null) {
+                throw e.InnerException;
             }
         }
 
@@ -105,6 +112,7 @@ namespace NContainer {
         /// Returns an instance of a registered class
         /// </summary>
         /// <typeparam name="T">The interface</typeparam>
+        [DebuggerStepThrough]
         public T GetAdapter<T>() {
             var myType = typeof(T);
             AdapterProvider<T> adapter;
@@ -118,7 +126,7 @@ namespace NContainer {
 
             return adapter.GrabInstance(this);
         }
-        
+
         #endregion
 
         #region Private stuff and implementation detail
@@ -139,14 +147,16 @@ namespace NContainer {
         #region Reflection catched generic-generated methods from JIT
 
         private static readonly MethodInfo GetInstanceMethod =
-            typeof(Container).GetMethods().First(m =>
-                m.Name == "GetAdapter" && m.IsGenericMethod && m.GetGenericArguments().Length == 1 &&
-                m.GetParameters().Length == 0);
+            typeof(Container).GetMethods()
+                .First(m =>
+                    m.Name == "GetAdapter" && m.IsGenericMethod && m.GetGenericArguments().Length == 1 &&
+                    m.GetParameters().Length == 0);
 
         private static readonly MethodInfo RegisterPortAdapterMethod =
-            typeof(Container).GetMethods().First(m =>
-                m.Name == "Register" && m.IsGenericMethod && m.GetGenericArguments().Length == 2 &&
-                m.GetParameters().Length == 0);
+            typeof(Container).GetMethods()
+                .First(m =>
+                    m.Name == "Register" && m.IsGenericMethod && m.GetGenericArguments().Length == 2 &&
+                    m.GetParameters().Length == 0);
 
         private static readonly Dictionary<Type, MethodInfo> GenericInstanceProviderMethod =
             new Dictionary<Type, MethodInfo>();

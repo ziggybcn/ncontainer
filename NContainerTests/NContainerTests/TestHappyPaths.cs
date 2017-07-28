@@ -9,7 +9,7 @@ namespace NContainerTests {
     [TestFixture]
     [Parallelizable]
     [Category("Unit tests")]
-    public class UnitTests {
+    public class TestHappyPaths {
         [Test]
         public void ContainerInjectionIntoContainer() {
             var parentContainer = new Container();
@@ -79,6 +79,31 @@ namespace NContainerTests {
             new Container().Register<TestClassA>().IsRegistered<TestInterfaceA>().Should().BeTrue();
         }
 
+
+        [Test]
+        public void MultipleRequests() {
+            var container = new Container();
+            var myInstance = new TestClassA();
+            container.Register<TestInterfaceA>(myInstance);
+            container.Register<TestInterfaceA>(myInstance);
+            var interfaceAVariable = container.GetAdapter<TestInterfaceA>();
+            var anotherInterfaceAVariable = container.GetAdapter<TestInterfaceA>();
+            interfaceAVariable.Should().BeSameAs(anotherInterfaceAVariable);
+        }
+    }
+
+    [TestFixture]
+    [Parallelizable]
+    [Category("Unit tests")]
+    public class TestThrownExceptions {
+        [Test]
+        public void ConstructorExceptionIsPropagated() {
+            var container = new Container();
+            container.Register<ExceptionInConstructorClass>();
+            container.Invoking(c => c.GetAdapter<TestInterfaceA>())
+                .ShouldThrow<ExceptionInConstructorClass.TestException>();
+        }
+
         [Test]
         public void MissingDependencyThrowsException() {
             var container = new Container();
@@ -95,20 +120,18 @@ namespace NContainerTests {
         }
 
         [Test]
-        public void MultipleRequests() {
-            var container = new Container();
-            var myInstance = new TestClassA();
-            container.Register<TestInterfaceA>(myInstance);
-            container.Register<TestInterfaceA>(myInstance);
-            var interfaceAVariable = container.GetAdapter<TestInterfaceA>();
-            var anotherInterfaceAVariable = container.GetAdapter<TestInterfaceA>();
-            interfaceAVariable.Should().BeSameAs(anotherInterfaceAVariable);
-        }
-
-        [Test]
         public void UnregisteredContractThrowsException() {
             new Container().Invoking(container => container.GetAdapter<IEnumerable>())
                 .ShouldThrow<UnresolvedInterfaceException>();
+        }
+    }
+
+    internal class ExceptionInConstructorClass : TestInterfaceA {
+        public ExceptionInConstructorClass() {
+            throw new TestException();
+        }
+
+        public class TestException : Exception {
         }
     }
 }

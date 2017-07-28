@@ -60,7 +60,7 @@
     <Compile Include="NonPublicConstructorClass.cs" />
     <Compile Include="TestClassA.cs" />
     <Compile Include="TestInterfaceA.cs" />
-    <Compile Include="UnitTests.cs" />
+    <Compile Include="TestHappyPaths.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
