@@ -18,7 +18,6 @@ namespace NContainer {
         /// <summary>
         /// Use this constructor to import data from other container upon container creation.
         /// </summary>
-        /// <param name="containerToImport"></param>
         public Container(Container containerToImport) {
             ImportContainer(containerToImport);
         }
@@ -79,7 +78,6 @@ namespace NContainer {
         /// Return True if the given interface has been registered into this container
         /// </summary>
         /// <typeparam name="T">The interface for ask for</typeparam>
-        /// <returns></returns>
         public bool IsRegistered<T>() {
             return _ports.ContainsKey(typeof(T));
         }
