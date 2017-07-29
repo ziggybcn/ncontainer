@@ -104,7 +104,7 @@ namespace NContainer {
                 return genericMethod.Invoke(this, null);
             }
             catch (TargetInvocationException e) when (e.InnerException != null) {
-                throw e.InnerException;
+                throw e.InnerException;                                
             }
         }
 

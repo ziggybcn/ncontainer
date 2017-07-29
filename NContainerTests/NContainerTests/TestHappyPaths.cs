@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using FluentAssertions;
 using NContainer;
 using NContainer.AdapterProviders;
@@ -117,6 +118,13 @@ namespace NContainerTests {
             new Container().Register<NonPublicConstructorClass>()
                 .Invoking(container => container.GetAdapter<TestInterfaceA>())
                 .ShouldThrow<MissingPublicConstructorException>();
+        }
+
+        [Test]
+        public void HappyPathWithGenerics() {
+            var c = new Container();
+            c.Register<IEnumerable<string>>(new List<string>());
+            c.GetAdapter<IEnumerable<string>>().Should().BeOfType<List<string>>();
         }
 
         [Test]
