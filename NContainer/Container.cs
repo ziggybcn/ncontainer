@@ -47,9 +47,31 @@ namespace NContainer {
             return this;
         }
 
+
         public Container ImportContainer(Container container) {
-            foreach (var p in container._ports.Keys)
-                _ports.Add(p, container._ports[p]);
+            return ImportContainer(container, ImportOptions.ExceptionOnDuplicates);
+        }
+
+        public Container ImportContainer(Container container, ImportOptions options) {
+            switch (options) {
+                case ImportOptions.ExceptionOnDuplicates:
+                    foreach (var item in container._ports)
+                        _ports.Add(item.Key, item.Value);
+                    break;
+                case ImportOptions.UpdateDuplicates:
+                    foreach (var item in container._ports)
+                        _ports[item.Key] = item.Value;
+                    break;
+                case ImportOptions.IgnoreDuplicates:
+                    foreach (var item in container._ports)
+                        if (_ports.ContainsKey(item.Key) == false)
+                            _ports[item.Key] = item.Value;
+                    break;
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(options), options,
+                        "invalid import option for container.");
+            }
             return this;
         }
 
@@ -102,7 +124,7 @@ namespace NContainer {
                 return genericMethod.Invoke(this, null);
             }
             catch (TargetInvocationException e) when (e.InnerException != null) {
-                throw e.InnerException;                                
+                throw e.InnerException;
             }
         }
 

@@ -30,7 +30,8 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\NContainer.xml</DocumentationFile>
+    <DocumentationFile>
+    </DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -48,6 +49,7 @@
     <Compile Include="AdapterProviders\FactoryAdapterProvider.cs" />
     <Compile Include="AdapterProviders\InstanceAdapterProvider.cs" />
     <Compile Include="AdapterProviders\MissingPublicConstructorException.cs" />
+    <Compile Include="ImportOptions.cs" />
     <Compile Include="Ports\Port.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AdapterProviders\ReflectionAdapterProvider.cs" />
