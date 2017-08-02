@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Reflection;
+using System.Runtime.ExceptionServices;
 
 namespace NContainer.AdapterProviders {
 #if !DEBUG
@@ -10,6 +11,7 @@ namespace NContainer.AdapterProviders {
         private static readonly ConstructorInfo[] Constructors = typeof(T).GetConstructors();
 
         public T GrabInstance(Container container) {
+            var instance = default(T);
             if (Constructors.Length == 0)
                 throw new MissingPublicConstructorException($"No public constructor found for {typeof(T).Name}");
 
@@ -18,11 +20,12 @@ namespace NContainer.AdapterProviders {
             for (var i = 0; i < parameters.Length; i++)
                 myParams[i] = container.GetAdapter(parameters[i].ParameterType);
             try {
-                return (T) Constructors[0].Invoke(myParams);
+                instance= (T) Constructors[0].Invoke(myParams);
             }
             catch (TargetInvocationException e) when (e.InnerException != null) {
-                throw e.InnerException;
+                ExceptionDispatchInfo.Capture(e.InnerException).Throw();                
             }
+            return instance;
         }
     }
 }

@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.ExceptionServices;
 using NContainer.AdapterProviders;
 using NContainer.Ports;
 
 namespace NContainer {
 #if !DEBUG
-
     [DebuggerStepThrough]
 #endif
     public class Container {
@@ -48,9 +48,8 @@ namespace NContainer {
         }
 
 
-        public Container ImportContainer(Container container) {
-            return ImportContainer(container, ImportOptions.ExceptionOnDuplicates);
-        }
+        public Container ImportContainer(Container container) => 
+            ImportContainer(container, ImportOptions.ExceptionOnDuplicates);
 
         public Container ImportContainer(Container container, ImportOptions options) {
             switch (options) {
@@ -114,18 +113,19 @@ namespace NContainer {
         /// <param name="contract">The interface</param>
         [DebuggerStepThrough]
         public object GetAdapter(Type contract) {
-            MethodInfo genericMethod;
-
-            if (!GenericInstanceProviderMethod.TryGetValue(contract, out genericMethod)) {
+            var instance = default(object);
+            if (!GenericInstanceProviderMethod.TryGetValue(contract, out var genericMethod))
+            {
                 genericMethod = GetInstanceMethod.MakeGenericMethod(contract);
                 GenericInstanceProviderMethod.Add(contract, genericMethod);
             }
             try {
-                return genericMethod.Invoke(this, null);
+                instance = genericMethod.Invoke(this, null);
             }
             catch (TargetInvocationException e) when (e.InnerException != null) {
-                throw e.InnerException;
+                ExceptionDispatchInfo.Capture(e.InnerException).Throw();
             }
+            return instance;
         }
 
         /// <summary>
@@ -166,6 +166,8 @@ namespace NContainer {
 
         #region Reflection catched generic-generated methods from JIT
 
+        // ReSharper disable ComplexConditionExpression
+
         private static readonly MethodInfo GetInstanceMethod =
             typeof(Container).GetMethods()
                 .First(m =>
@@ -177,6 +179,8 @@ namespace NContainer {
                 .First(m =>
                     m.Name == "Register" && m.IsGenericMethod && m.GetGenericArguments().Length == 2 &&
                     m.GetParameters().Length == 0);
+
+        // ReSharper restore ComplexConditionExpression
 
         private static readonly Dictionary<Type, MethodInfo> GenericInstanceProviderMethod =
             new Dictionary<Type, MethodInfo>();

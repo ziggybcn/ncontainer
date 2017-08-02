@@ -3,7 +3,6 @@ using System.Diagnostics;
 
 namespace NContainer.AdapterProviders {
 #if !DEBUG
-
     [DebuggerStepThrough]
 #endif
     internal class FactoryAdapterProvider<T> : AdapterProvider<T> {
@@ -13,8 +12,6 @@ namespace NContainer.AdapterProviders {
             _factory = factory;
         }
 
-        public T GrabInstance(Container container) {
-            return _factory.Invoke(container);
-        }
+        public T GrabInstance(Container container) => _factory(container);
     }
 }

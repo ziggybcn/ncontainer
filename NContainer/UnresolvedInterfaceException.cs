@@ -3,7 +3,6 @@ using System.Diagnostics;
 
 namespace NContainer {
 #if !DEBUG
-
     [DebuggerStepThrough]
 #endif
     public class UnresolvedInterfaceException : Exception {

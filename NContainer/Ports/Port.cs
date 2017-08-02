@@ -4,7 +4,6 @@ using NContainer.AdapterProviders;
 
 namespace NContainer.Ports {
 #if !DEBUG
-
     [DebuggerStepThrough]
 #endif
     internal class Port<T> : Port {
