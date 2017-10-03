@@ -12,12 +12,12 @@ namespace NContainer {
     [DebuggerStepThrough]
 #endif
     public class Container {
-        public Container() {
-        }
+        public Container() { }
 
         /// <summary>
         /// Use this constructor to import data from other container upon container creation.
         /// </summary>
+        [DebuggerStepThrough]
         public Container(Container containerToImport) {
             ImportContainer(containerToImport);
         }
@@ -45,7 +45,7 @@ namespace NContainer {
                 registrationMethod.Invoke(this, null);
             }
             return this;
-        }
+        } 
 
 
         public Container ImportContainer(Container container) => 
@@ -185,5 +185,9 @@ namespace NContainer {
             new Dictionary<Type, MethodInfo>();
 
         #endregion
+    }
+     
+    public static class FluentContainerExtensions {
+        public static Container And(this Container container) => container;
     }
 }

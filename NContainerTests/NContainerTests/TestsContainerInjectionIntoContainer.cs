@@ -9,9 +9,8 @@ namespace NContainerTests {
     [Parallelizable]
     [Category("Unit tests")]
     internal class TestsContainerInjectionIntoContainer {
-        [Test]
-        public void ContainerInjectionIntoContainer()
-        {
+        [Parallelizable, Test]
+        public void ContainerInjectionIntoContainer() {
             var parentContainer = new Container();
             var myApple = new Apple();
             parentContainer.Register<Fruit>(myApple);
@@ -22,10 +21,8 @@ namespace NContainerTests {
             inheritedContainer.GetComponent<Fruit>().Should().BeSameAs(myApple);
         }
 
-
-        [Test]
-        public void ContainerInjectionWithUpdatingDuplicates()
-        {
+        [Parallelizable, Test]
+        public void ContainerInjectionWithUpdatingDuplicates() {
             var sut = new Container();
             var auxContainer = new Container();
             sut.Register<Fruit>(new Apple());
@@ -36,15 +33,14 @@ namespace NContainerTests {
             sut.GetComponent<Fruit>().Should().BeOfType<Pear>();
         }
 
-        [Test]
-        public void ContainerInjectionIgnoringDuplicates()
-        {
+        [Parallelizable, Test]
+        public void ContainerInjectionIgnoringDuplicates() {
             var sut = new Container();
             sut.Register<Fruit>(new Apple());
 
             var auxContainer = new Container();
-            auxContainer.Register<Fruit>(new Pear());
-            auxContainer.Register<FruitPie>();
+            var myPear = new Pear();
+            auxContainer.Register<Fruit>(myPear).And().Register<FruitPie>();
 
             sut.ImportContainer(auxContainer, ImportOptions.IgnoreDuplicates)
                 .GetComponent<Fruit>()
@@ -52,9 +48,8 @@ namespace NContainerTests {
                 .BeOfType<Apple>();
         }
 
-        [Test]
-        public void ContainerInjectionWithUnexpectedDuplicatesThrowsException()
-        {
+        [Parallelizable, Test]
+        public void ContainerInjectionWithUnexpectedDuplicatesThrowsException() {
             var sut = new Container();
             sut.Register<Fruit>(new Apple());
 
@@ -66,12 +61,11 @@ namespace NContainerTests {
                 .ShouldThrow<ArgumentException>();
         }
 
-
-        [Test]
-        public void ContainerInjectionIntoContainerConstructor()
-        {
+        [Parallelizable, Test]
+        public void ContainerInjectionIntoContainerConstructor() {
             var parentContainer = new Container();
             var myApple = new Apple();
+
             parentContainer.Register<Fruit>(myApple);
 
             var inheritedContainer = new Container(parentContainer);

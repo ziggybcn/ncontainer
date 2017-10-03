@@ -14,6 +14,8 @@ namespace NContainerTests {
     public class TestThrownExceptions {
         [Test]
         public void ConstructorExceptionIsPropagated() {
+
+            // ExceptionInConstructorClass is a class that throws an exception on its constructor.
             var container = new Container();
             container.Register<ExceptionInConstructorClass>();
             container.Invoking(c => c.GetComponent<Fruit>())
@@ -47,7 +49,7 @@ namespace NContainerTests {
             new Container().Invoking(container => container.GetComponent<IEnumerable>())
                 .ShouldThrow<UnresolvedInterfaceException>();
         }
-
+         
         [Test]
         public void InvalidImportContainerParameterThrowsException() {
             new Container()

@@ -9,7 +9,7 @@ namespace NContainerTests {
     [Category("Unit tests")]
     public class TestHappyPaths {
 
-        [Test]
+        [Parallelizable,Test]
         public void RegisterAClassShouldRegisterItsContracts() {
             // Notice that Class Apple implements contract Fruit
             var container = new Container();
@@ -17,18 +17,18 @@ namespace NContainerTests {
             container.GetComponent<Fruit>().Should().BeOfType<Apple>();
         }
 
-        [Test]
+        [Parallelizable, Test]
         public void ClassWithDependenciesShouldReturnDependenciesSolved() {
             // Notice that Class Apple implements contract Fruit
             // Class FruitPie implements Desert
             // Deser depends of Fruit to provide Flavor
 
             var container = new Container();
-            container.Register<Apple>().Register<FruitPie>();
+            container.Register<Apple>().And().Register<FruitPie>();
             container.GetComponent<Desert>().Flavor.Should().BeOfType<Apple>();
         }
 
-        [Test]
+        [Parallelizable, Test]
         public void RegisteringInterfaceAndClassShouldReturnTheClass() {
             // Notice that Class Apple implements contract Fruit
             var container = new Container();
@@ -36,7 +36,7 @@ namespace NContainerTests {
             container.GetComponent<Fruit>().Should().BeOfType<Apple>();
         }
 
-        [Test]
+        [Parallelizable, Test]
         public void InterfaceWithFactoryMethodShouldBeExecuted() {
             // Notice that Class Apple implements contract Fruit
             var container = new Container();
@@ -44,7 +44,7 @@ namespace NContainerTests {
             container.GetComponent<Fruit>().Should().BeOfType<Apple>();
         }
 
-        [Test]
+        [Parallelizable, Test]
         public void SingleInstanceContractRegistrationShouldReturnSameInstance() {
             // Notice that Class Apple implements contract Fruit
             var container = new Container();
@@ -54,7 +54,7 @@ namespace NContainerTests {
         }
 
 
-        [Test]
+        [Parallelizable, Test]
         public void MultipleRequests() {
             // Notice that Class Apple implements contract Fruit
             var container = new Container();
@@ -66,12 +66,12 @@ namespace NContainerTests {
             interfaceAVariable.Should().BeSameAs(anotherInterfaceAVariable);
         }
 
-        [Test]
+        [Parallelizable, Test]
         public void IsRegisteredReturnsFalseForUnregisteredInterfaces() {
             new Container().IsRegistered<Fruit>().Should().BeFalse();
         }
 
-        [Test]
+        [Parallelizable, Test]
         public void IsRegisteredReturnsTrueForRegisteredInterfaces() {
             var sut = new Container();
             sut.Register<Apple>();
