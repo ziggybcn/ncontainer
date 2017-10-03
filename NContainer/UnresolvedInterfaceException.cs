@@ -2,7 +2,7 @@ using System;
 using System.Diagnostics;
 
 namespace NContainer {
-#if !DEBUG
+#if IGNORECONTAINER
     [DebuggerStepThrough]
 #endif
     public class UnresolvedInterfaceException : Exception {

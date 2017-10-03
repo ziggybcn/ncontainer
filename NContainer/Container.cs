@@ -8,7 +8,7 @@ using NContainer.AdapterProviders;
 using NContainer.Ports;
 
 namespace NContainer {
-#if !DEBUG
+#if IGNORECONTAINER
     [DebuggerStepThrough]
 #endif
     public class Container {
@@ -17,7 +17,6 @@ namespace NContainer {
         /// <summary>
         /// Use this constructor to import data from other container upon container creation.
         /// </summary>
-        [DebuggerStepThrough]
         public Container(Container containerToImport) {
             ImportContainer(containerToImport);
         }
@@ -111,7 +110,6 @@ namespace NContainer {
         /// Returns an instance of a registered class. Notice the generic version of this method is preferred always.
         /// </summary>
         /// <param name="contract">The interface</param>
-        [DebuggerStepThrough]
         public object GetComponent(Type contract) {
             var instance = default(object);
             if (!GenericInstanceProviderMethod.TryGetValue(contract, out var genericMethod))
@@ -132,7 +130,6 @@ namespace NContainer {
         /// Returns an instance of a registered class
         /// </summary>
         /// <typeparam name="T">The interface</typeparam>
-        [DebuggerStepThrough]
         public T GetComponent<T>() {
             var myType = typeof(T);
             AdapterProvider<T> adapter;

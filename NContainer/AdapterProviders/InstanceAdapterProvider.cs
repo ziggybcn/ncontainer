@@ -1,7 +1,7 @@
 using System.Diagnostics;
 
 namespace NContainer.AdapterProviders {
-#if !DEBUG
+#if IGNORECONTAINER
     [DebuggerStepThrough]
 #endif
     internal class InstanceAdapterProvider<T> : AdapterProvider<T> {

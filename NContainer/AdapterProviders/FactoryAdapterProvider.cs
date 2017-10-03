@@ -2,7 +2,7 @@ using System;
 using System.Diagnostics;
 
 namespace NContainer.AdapterProviders {
-#if !DEBUG
+#if IGNORECONTAINER
     [DebuggerStepThrough]
 #endif
     internal class FactoryAdapterProvider<T> : AdapterProvider<T> {

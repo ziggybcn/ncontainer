@@ -3,8 +3,7 @@ using System.Reflection;
 using System.Runtime.ExceptionServices;
 
 namespace NContainer.AdapterProviders {
-#if !DEBUG
-
+#if IGNORECONTAINER
     [DebuggerStepThrough]
 #endif
     internal class ReflectionAdapterProvider<T> : AdapterProvider<T> {

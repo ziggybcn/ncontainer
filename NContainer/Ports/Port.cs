@@ -3,7 +3,7 @@ using System.Diagnostics;
 using NContainer.AdapterProviders;
 
 namespace NContainer.Ports {
-#if !DEBUG
+#if IGNORECONTAINER
     [DebuggerStepThrough]
 #endif
     internal class Port<T> : Port {
