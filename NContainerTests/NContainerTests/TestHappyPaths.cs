@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System.Collections.Generic;
+using FluentAssertions;
 using NContainer;
 using NContainerTests.TestScenarioItems;
 using NUnit.Framework;
@@ -78,6 +79,14 @@ namespace NContainerTests {
             sut.IsRegistered<Fruit>().Should().BeTrue();
         }
 
+
+        [Parallelizable, Test]
+        public void HappyPathWithGenerics()
+        {
+            var c = new Container();
+            c.Register<IEnumerable<string>>(new List<string>());
+            c.GetComponent<IEnumerable<string>>().Should().BeOfType<List<string>>();
+        }
 
     }
 }
