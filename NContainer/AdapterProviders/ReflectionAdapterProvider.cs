@@ -12,6 +12,7 @@ namespace NContainer.AdapterProviders {
             var myParams = new object[parameters.Length];
             for (var i = 0; i < parameters.Length; i++)
                 myParams[i] = container.GetAdapter(parameters[i].ParameterType);
+
             return (T) Constructors[0].Invoke(myParams);
         }
     }
