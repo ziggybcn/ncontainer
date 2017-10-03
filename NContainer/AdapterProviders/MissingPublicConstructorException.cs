@@ -6,7 +6,6 @@ namespace NContainer.AdapterProviders {
     [DebuggerStepThrough]
 #endif
     public class MissingPublicConstructorException : Exception {
-        internal MissingPublicConstructorException(string text) : base(text) {
-        }
+        internal MissingPublicConstructorException(string text) : base(text) { }
     }
 }

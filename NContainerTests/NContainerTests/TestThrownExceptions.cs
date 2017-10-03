@@ -16,7 +16,7 @@ namespace NContainerTests {
         public void ConstructorExceptionIsPropagated() {
             var container = new Container();
             container.Register<ExceptionInConstructorClass>();
-            container.Invoking(c => c.GetAdapter<Fruit>())
+            container.Invoking(c => c.GetComponent<Fruit>())
                 .ShouldThrow<ExceptionInConstructorClass.TestException>();
         }
 
@@ -24,27 +24,27 @@ namespace NContainerTests {
         public void HappyPathWithGenerics() {
             var c = new Container();
             c.Register<IEnumerable<string>>(new List<string>());
-            c.GetAdapter<IEnumerable<string>>().Should().BeOfType<List<string>>();
+            c.GetComponent<IEnumerable<string>>().Should().BeOfType<List<string>>();
         }
 
         [Test]
         public void MissingDependencyThrowsException() {
             var container = new Container();
             container.Register<FruitPie>();
-            Action getInstance = () => container.GetAdapter<Desert>();
+            Action getInstance = () => container.GetComponent<Desert>();
             getInstance.ShouldThrow<UnresolvedInterfaceException>();
         }
 
         [Test]
         public void MissingPublicConstructorThrowsException() {
             new Container().Register<NonPublicConstructorClass>()
-                .Invoking(container => container.GetAdapter<Fruit>())
+                .Invoking(container => container.GetComponent<Fruit>())
                 .ShouldThrow<MissingPublicConstructorException>();
         }
 
         [Test]
         public void UnregisteredContractThrowsException() {
-            new Container().Invoking(container => container.GetAdapter<IEnumerable>())
+            new Container().Invoking(container => container.GetComponent<IEnumerable>())
                 .ShouldThrow<UnresolvedInterfaceException>();
         }
 

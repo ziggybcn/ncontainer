@@ -18,28 +18,28 @@ namespace PerformanceTests {
         public void MeasureReflectionInstanceResolver() {
             var c = new Container().Register<Apple>().Register<FruitPie>();
             for (var i = 0; i < Iterations; i++)
-                c.GetAdapter<Desert>();
+                c.GetComponent<Desert>();
         }
 
         public void MeasureSingletoneDependencyInstanceResolver() {
             var c = new Container().Register<Fruit>(new Apple()).Register<FruitPie>();
             for (var i = 0; i < Iterations; i++)
-                c.GetAdapter<Desert>();
+                c.GetComponent<Desert>();
         }
 
         public void MeasureSingletoneInstanceResolver() {
             var c = new Container().Register<Fruit>(new Apple());
-            c.Register<Desert>(new FruitPie(c.GetAdapter<Fruit>()));
+            c.Register<Desert>(new FruitPie(c.GetComponent<Fruit>()));
             for (var i = 0; i < Iterations; i++)
-                c.GetAdapter<Desert>();
+                c.GetComponent<Desert>();
         }
 
         public void MeasureFactoryInstanceResolver() {
             var c = new Container();
-            c.Register<Desert>(container => new FruitPie(container.GetAdapter<Fruit>()));
+            c.Register<Desert>(container => new FruitPie(container.GetComponent<Fruit>()));
             c.Register<Fruit>(container => new Apple());
             for (var i = 0; i < Iterations; i++)
-                c.GetAdapter<Desert>();
+                c.GetComponent<Desert>();
         }
     }
 }

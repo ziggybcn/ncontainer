@@ -112,7 +112,7 @@ namespace NContainer {
         /// </summary>
         /// <param name="contract">The interface</param>
         [DebuggerStepThrough]
-        public object GetAdapter(Type contract) {
+        public object GetComponent(Type contract) {
             var instance = default(object);
             if (!GenericInstanceProviderMethod.TryGetValue(contract, out var genericMethod))
             {
@@ -133,7 +133,7 @@ namespace NContainer {
         /// </summary>
         /// <typeparam name="T">The interface</typeparam>
         [DebuggerStepThrough]
-        public T GetAdapter<T>() {
+        public T GetComponent<T>() {
             var myType = typeof(T);
             AdapterProvider<T> adapter;
             try {
@@ -152,8 +152,7 @@ namespace NContainer {
         #region Private stuff and implementation detail
 
         private Port<TP> GetPortForAGivenContract<TP>() {
-            Port port;
-            if (_ports.TryGetValue(typeof(TP), out port)) return port.GetTyped<TP>();
+            if (_ports.TryGetValue(typeof(TP), out var port)) return port.GetTyped<TP>();
 
             var typedPort = new Port<TP>();
             _ports.Add(typeof(TP), typedPort);
@@ -171,7 +170,7 @@ namespace NContainer {
         private static readonly MethodInfo GetInstanceMethod =
             typeof(Container).GetMethods()
                 .First(m =>
-                    m.Name == "GetAdapter" && m.IsGenericMethod && m.GetGenericArguments().Length == 1 &&
+                    m.Name == "GetComponent" && m.IsGenericMethod && m.GetGenericArguments().Length == 1 &&
                     m.GetParameters().Length == 0);
 
         private static readonly MethodInfo RegisterPortAdapterMethod =
