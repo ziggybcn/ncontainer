@@ -95,12 +95,27 @@ namespace NContainer {
             return this;
         }
 
-
+        /// <summary>
+        /// Creates a singleton instance in a lazy maner. 
+        /// The factory method will only be called the first time an instance is requested, 
+        /// and a catched copy will be kept for further calls, so it behaves like a factory-based singleton
+        /// </summary>
+        /// <typeparam name="TP"></typeparam>
+        /// <param name="lazyFactory"></param>
+        /// <returns></returns>
         public Container RegisterLazy<TP>(Func<Container, TP> lazyFactory) {
             GetPortForAGivenContract<TP>().RegisterLazyAdapter(this, lazyFactory);
             return this;
         }
 
+        /// <summary>
+        /// Paris an interface with a class in lazy-singleton maner. 
+        /// That is, the actual instance will be created the first time it is requested, 
+        /// and further requests will return a catched copy of it.
+        /// </summary>
+        /// <typeparam name="TP"></typeparam>
+        /// <typeparam name="TA"></typeparam>
+        /// <returns></returns>
         public Container RegisterLazy<TP, TA>() where TA : TP {
             GetPortForAGivenContract<TP>().RegisterDeferredSingleton<TA>(this);
             return this;
