@@ -46,5 +46,22 @@ namespace NContainerTests {
                 .Invoking(container => container.ImportContainer(new Container(), (ImportOptions) 1024))
                 .ShouldThrow<ArgumentOutOfRangeException>();
         }
+
+        [Test]
+        public void LazyRegistrationOfASingletonWithExceptionOnConsutructor()
+        {
+            var c = new Container();
+            c.RegisterLazy<Fruit, ExceptionInConstructorClass>();
+            c.Invoking(c2 => c2.GetComponent<Fruit>()).ShouldThrow<ExceptionInConstructorClass.TestException>();
+        }
+
+        [Test]
+        public void MissingPublicConstructorInLazyThrowsException()
+        {
+            new Container().RegisterLazy<Fruit, NonPublicConstructorClass>()
+                .Invoking(container => container.GetComponent<Fruit>())
+                .ShouldThrow<MissingPublicConstructorException>();
+        }
+
     }
 }

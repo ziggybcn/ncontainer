@@ -46,6 +46,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AdapterProviders\AdapterProvider.cs" />
+    <Compile Include="AdapterProviders\DeferredSingleton.cs" />
+    <Compile Include="AdapterProviders\LazyAdapterProvider.cs" />
     <Compile Include="Container.cs" />
     <Compile Include="AdapterProviders\FactoryAdapterProvider.cs" />
     <Compile Include="AdapterProviders\InstanceAdapterProvider.cs" />

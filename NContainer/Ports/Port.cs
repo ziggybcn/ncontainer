@@ -28,6 +28,17 @@ namespace NContainer.Ports {
             SetAdapter(item);
         }
 
+        public void RegisterLazyAdapter(Container container, Func<Container, T> lazyFactory) {
+            var item = (AdapterProvider<T>)new LazyAdapterProvider<T>(container,lazyFactory);
+            SetAdapter(item);
+
+        }
+
+        public void RegisterDeferredSingleton<TA>(Container container) {
+            var item = (AdapterProvider<T>)new DeferredSingleton<TA>(container);
+            SetAdapter(item);
+        }
+
         private void SetAdapter(AdapterProvider<T> item) {
             Addapter = item;
         }

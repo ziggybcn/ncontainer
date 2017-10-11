@@ -88,5 +88,28 @@ namespace NContainerTests {
             c.GetComponent<IEnumerable<string>>().Should().BeOfType<List<string>>();
         }
 
+
+        [Test]
+        public void LazyRegistrationWithFactoryMethod() {
+            var c = new Container();
+            c.RegisterLazy<Desert>(i => new FruitPie(i.GetComponent<Fruit>()));
+            c.Register<Fruit, Apple>();
+            c.GetComponent<Desert>().Flavor.Should().BeOfType<Apple>();
+        }
+
+
+        [Test]
+        public void LazyRegistrationOfASingletonUsingReflection()
+        {
+            var c = new Container();
+            c.RegisterLazy<Desert, FruitPie>();
+            c.Register<Fruit, Apple>();
+            c.GetComponent<Desert>().Flavor.Should().BeOfType<Apple>();
+            c.GetComponent<Desert>().Should().BeSameAs(c.GetComponent<Desert>());
+        }
+
+
+
+
     }
 }

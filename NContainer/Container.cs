@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
 using NContainer.AdapterProviders;
 using NContainer.Ports;
@@ -91,6 +92,17 @@ namespace NContainer {
         // ReSharper disable once UnusedMethodReturnValue.Global (allows for fluent syntax)
         public Container Register<TP>(Func<Container, TP> factory) {
             GetPortForAGivenContract<TP>().RegisterFactoryAdapter(factory);
+            return this;
+        }
+
+
+        public Container RegisterLazy<TP>(Func<Container, TP> lazyFactory) {
+            GetPortForAGivenContract<TP>().RegisterLazyAdapter(this, lazyFactory);
+            return this;
+        }
+
+        public Container RegisterLazy<TP, TA>() where TA : TP {
+            GetPortForAGivenContract<TP>().RegisterDeferredSingleton<TA>(this);
             return this;
         }
 
