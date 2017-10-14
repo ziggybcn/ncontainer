@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.ExceptionServices;
 using NContainer.AdapterProviders;
 using NContainer.Ports;
@@ -46,7 +44,6 @@ namespace NContainer {
             }
             return this;
         } 
-
 
         public Container ImportContainer(Container container) => 
             ImportContainer(container, ImportOptions.ExceptionOnDuplicates);
@@ -104,7 +101,7 @@ namespace NContainer {
         /// <param name="lazyFactory"></param>
         /// <returns></returns>
         public Container RegisterLazy<TP>(Func<Container, TP> lazyFactory) {
-            GetPortForAGivenContract<TP>().RegisterLazyAdapter(this, lazyFactory);
+            GetPortForAGivenContract<TP>().RegisterLazyFactoryAdapter(this, lazyFactory);
             return this;
         }
 
@@ -128,7 +125,6 @@ namespace NContainer {
         public bool IsRegistered<T>() {
             return _ports.ContainsKey(typeof(T));
         }
-
         #endregion
 
         #region obtain adapters for given ports
@@ -212,6 +208,15 @@ namespace NContainer {
     }
      
     public static class FluentContainerExtensions {
+        // ReSharper disable once MethodNameNotMeaningful
+        /// <summary>
+        /// Returns the container in order to provide flient syntax
+        /// </summary>
         public static Container And(this Container container) => container;
+
+        /// <summary>
+        /// Creates a soft clone of the current container so it can be used to transitory register adapters.
+        /// </summary>
+        public static Container Clone(this Container container) => new Container(container);
     }
 }

@@ -108,8 +108,15 @@ namespace NContainerTests {
             c.GetComponent<Desert>().Should().BeSameAs(c.GetComponent<Desert>());
         }
 
+        [Test]
+        public void RegisterCloneAndRegister() {
+            var myContainer = new Container();
+            myContainer.RegisterLazy<Desert, FruitPie>();
+            myContainer.Register<Fruit, Apple>();
 
-
+            myContainer.Clone().And().Register<Fruit, Pear>().And().
+                GetComponent<Desert>().Flavor.Should().BeOfType<Pear>();
+        }
 
     }
 }

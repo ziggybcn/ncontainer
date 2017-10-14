@@ -48,6 +48,8 @@
     <Compile Include="AdapterProviders\AdapterProvider.cs" />
     <Compile Include="AdapterProviders\DeferredSingleton.cs" />
     <Compile Include="AdapterProviders\LazyAdapterProvider.cs" />
+    <Compile Include="AdapterProviders\ReflectionConstruction.cs" />
+    <Compile Include="AdapterProviders\ReflectionSolver.cs" />
     <Compile Include="Container.cs" />
     <Compile Include="AdapterProviders\FactoryAdapterProvider.cs" />
     <Compile Include="AdapterProviders\InstanceAdapterProvider.cs" />
