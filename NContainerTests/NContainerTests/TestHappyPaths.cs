@@ -74,38 +74,38 @@ namespace NContainerTests {
 
         [Parallelizable, Test]
         public void IsRegisteredReturnsTrueForRegisteredInterfaces() {
-            var sut = new Container();
-            sut.Register<Apple>();
-            sut.IsRegistered<Fruit>().Should().BeTrue();
+            var container = new Container();
+            container.Register<Apple>();
+            container.IsRegistered<Fruit>().Should().BeTrue();
         }
 
 
         [Parallelizable, Test]
         public void HappyPathWithGenerics()
         {
-            var c = new Container();
-            c.Register<IEnumerable<string>>(new List<string>());
-            c.GetComponent<IEnumerable<string>>().Should().BeOfType<List<string>>();
+            var container = new Container();
+            container.Register<IEnumerable<string>>(new List<string>());
+            container.GetComponent<IEnumerable<string>>().Should().BeOfType<List<string>>();
         }
 
 
         [Test]
         public void LazyRegistrationWithFactoryMethod() {
-            var c = new Container();
-            c.RegisterLazy<Desert>(i => new FruitPie(i.GetComponent<Fruit>()));
-            c.Register<Fruit, Apple>();
-            c.GetComponent<Desert>().Flavor.Should().BeOfType<Apple>();
+            var container = new Container();
+            container.RegisterLazy<Desert>(i => new FruitPie(i.GetComponent<Fruit>()));
+            container.Register<Fruit, Apple>();
+            container.GetComponent<Desert>().Flavor.Should().BeOfType<Apple>();
         }
 
 
         [Test]
         public void LazyRegistrationOfASingletonUsingReflection()
         {
-            var c = new Container();
-            c.RegisterLazy<Desert, FruitPie>();
-            c.Register<Fruit, Apple>();
-            c.GetComponent<Desert>().Flavor.Should().BeOfType<Apple>();
-            c.GetComponent<Desert>().Should().BeSameAs(c.GetComponent<Desert>());
+            var container = new Container();
+            container.RegisterLazy<Desert, FruitPie>();
+            container.Register<Fruit, Apple>();
+            container.GetComponent<Desert>().Flavor.Should().BeOfType<Apple>();
+            container.GetComponent<Desert>().Should().BeSameAs(container.GetComponent<Desert>());
         }
 
         [Test]
