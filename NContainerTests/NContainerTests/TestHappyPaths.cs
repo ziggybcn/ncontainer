@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System.Collections.Generic;
+using FluentAssertions;
 using NContainer;
 using NContainerTests.TestScenarioItems;
 using NUnit.Framework;
@@ -73,11 +74,49 @@ namespace NContainerTests {
 
         [Parallelizable, Test]
         public void IsRegisteredReturnsTrueForRegisteredInterfaces() {
-            var sut = new Container();
-            sut.Register<Apple>();
-            sut.IsRegistered<Fruit>().Should().BeTrue();
+            var container = new Container();
+            container.Register<Apple>();
+            container.IsRegistered<Fruit>().Should().BeTrue();
         }
 
+
+        [Parallelizable, Test]
+        public void HappyPathWithGenerics()
+        {
+            var container = new Container();
+            container.Register<IEnumerable<string>>(new List<string>());
+            container.GetComponent<IEnumerable<string>>().Should().BeOfType<List<string>>();
+        }
+
+
+        [Test]
+        public void LazyRegistrationWithFactoryMethod() {
+            var container = new Container();
+            container.RegisterLazy<Desert>(i => new FruitPie(i.GetComponent<Fruit>()));
+            container.Register<Fruit, Apple>();
+            container.GetComponent<Desert>().Flavor.Should().BeOfType<Apple>();
+        }
+
+
+        [Test]
+        public void LazyRegistrationOfASingletonUsingReflection()
+        {
+            var container = new Container();
+            container.RegisterLazy<Desert, FruitPie>();
+            container.Register<Fruit, Apple>();
+            container.GetComponent<Desert>().Flavor.Should().BeOfType<Apple>();
+            container.GetComponent<Desert>().Should().BeSameAs(container.GetComponent<Desert>());
+        }
+
+        [Test]
+        public void RegisterCloneAndRegister() {
+            var myContainer = new Container();
+            myContainer.RegisterLazy<Desert, FruitPie>();
+            myContainer.Register<Fruit, Apple>();
+
+            myContainer.Clone().And().Register<Fruit, Pear>().And().
+                GetComponent<Desert>().Flavor.Should().BeOfType<Pear>();
+        }
 
     }
 }

@@ -1,36 +1,31 @@
 using System;
-using System.Diagnostics;
 using NContainer.AdapterProviders;
 
 namespace NContainer.Ports {
-#if !DEBUG
+#if IGNORECONTAINER
     [DebuggerStepThrough]
 #endif
     internal class Port<T> : Port {
         public AdapterProvider<T> Addapter { get; private set; }
 
-        Port<TI> Port.GetTyped<TI>() {
-            return this as Port<TI>;
-        }
+        Port<TI> Port.GetTyped<TI>() => this as Port<TI>;
 
-        public void RegisterReflectionAdapter<TA>() where TA : T {
-            var item = (AdapterProvider<T>) new ReflectionAdapterProvider<TA>();
-            SetAdapter(item);
-        }
+        internal void RegisterReflectionAdapter<TA>() where TA : T => 
+            SetAdapter((AdapterProvider<T>)new ReflectionAdapterProvider<TA>());
 
-        public void RegisterInstanceAdapter(T instance) {
-            var item = (AdapterProvider<T>) new InstanceAdapterProvider<T>(instance);
-            SetAdapter(item);
-        }
+        internal void RegisterInstanceAdapter(T instance) => 
+            SetAdapter(new InstanceAdapterProvider<T>(instance));
 
-        public void RegisterFactoryAdapter(Func<Container, T> factory) {
-            var item = (AdapterProvider<T>) new FactoryAdapterProvider<T>(factory);
-            SetAdapter(item);
-        }
+        internal void RegisterFactoryAdapter(Func<Container, T> factory) => 
+            SetAdapter(new FactoryAdapterProvider<T>(factory));
 
-        private void SetAdapter(AdapterProvider<T> item) {
-            Addapter = item;
-        }
+        internal void RegisterLazyFactoryAdapter(Container container, Func<Container, T> lazyFactory) => 
+            SetAdapter(new LazyAdapterProvider<T>(container, lazyFactory));
+
+        internal void RegisterDeferredSingleton<TA>(Container container) where TA : T => 
+            SetAdapter((AdapterProvider<T>)new DeferredSingleton<TA>(container));
+
+        internal void SetAdapter(AdapterProvider<T> item) => Addapter = item;
     }
 
     internal interface Port {

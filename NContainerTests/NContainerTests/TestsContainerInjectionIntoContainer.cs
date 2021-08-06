@@ -7,7 +7,7 @@ using NUnit.Framework;
 namespace NContainerTests {
     [TestFixture]
     [Parallelizable]
-    [Category("Unit tests")]
+    [Category("Container injection tests")]
     internal class TestsContainerInjectionIntoContainer {
         [Parallelizable, Test]
         public void ContainerInjectionIntoContainer() {

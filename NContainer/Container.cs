@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
@@ -8,7 +7,7 @@ using NContainer.AdapterProviders;
 using NContainer.Ports;
 
 namespace NContainer {
-#if !DEBUG
+#if IGNORECONTAINER
     [DebuggerStepThrough]
 #endif
     public class Container {
@@ -17,7 +16,6 @@ namespace NContainer {
         /// <summary>
         /// Use this constructor to import data from other container upon container creation.
         /// </summary>
-        [DebuggerStepThrough]
         public Container(Container containerToImport) {
             ImportContainer(containerToImport);
         }
@@ -46,7 +44,6 @@ namespace NContainer {
             }
             return this;
         } 
-
 
         public Container ImportContainer(Container container) => 
             ImportContainer(container, ImportOptions.ExceptionOnDuplicates);
@@ -96,13 +93,38 @@ namespace NContainer {
         }
 
         /// <summary>
+        /// Creates a singleton instance in a lazy maner. 
+        /// The factory method will only be called the first time an instance is requested, 
+        /// and a catched copy will be kept for further calls, so it behaves like a factory-based singleton
+        /// </summary>
+        /// <typeparam name="TP"></typeparam>
+        /// <param name="lazyFactory"></param>
+        /// <returns></returns>
+        public Container RegisterLazy<TP>(Func<Container, TP> lazyFactory) {
+            GetPortForAGivenContract<TP>().RegisterLazyFactoryAdapter(this, lazyFactory);
+            return this;
+        }
+
+        /// <summary>
+        /// Paris an interface with a class in lazy-singleton maner. 
+        /// That is, the actual instance will be created the first time it is requested, 
+        /// and further requests will return a catched copy of it.
+        /// </summary>
+        /// <typeparam name="TP"></typeparam>
+        /// <typeparam name="TA"></typeparam>
+        /// <returns></returns>
+        public Container RegisterLazy<TP, TA>() where TA : TP {
+            GetPortForAGivenContract<TP>().RegisterDeferredSingleton<TA>(this);
+            return this;
+        }
+
+        /// <summary>
         /// Return True if the given interface has been registered into this container
         /// </summary>
         /// <typeparam name="T">The interface for ask for</typeparam>
         public bool IsRegistered<T>() {
             return _ports.ContainsKey(typeof(T));
         }
-
         #endregion
 
         #region obtain adapters for given ports
@@ -111,7 +133,6 @@ namespace NContainer {
         /// Returns an instance of a registered class. Notice the generic version of this method is preferred always.
         /// </summary>
         /// <param name="contract">The interface</param>
-        [DebuggerStepThrough]
         public object GetComponent(Type contract) {
             var instance = default(object);
             if (!GenericInstanceProviderMethod.TryGetValue(contract, out var genericMethod))
@@ -132,7 +153,6 @@ namespace NContainer {
         /// Returns an instance of a registered class
         /// </summary>
         /// <typeparam name="T">The interface</typeparam>
-        [DebuggerStepThrough]
         public T GetComponent<T>() {
             var myType = typeof(T);
             AdapterProvider<T> adapter;
@@ -188,6 +208,15 @@ namespace NContainer {
     }
      
     public static class FluentContainerExtensions {
+        // ReSharper disable once MethodNameNotMeaningful
+        /// <summary>
+        /// Returns the container in order to provide flient syntax
+        /// </summary>
         public static Container And(this Container container) => container;
+
+        /// <summary>
+        /// Creates a soft clone of the current container so it can be used to transitory register adapters.
+        /// </summary>
+        public static Container Clone(this Container container) => new Container(container);
     }
 }

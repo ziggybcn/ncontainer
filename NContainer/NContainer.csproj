@@ -19,7 +19,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;IGNORECONTAINER</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -46,6 +46,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AdapterProviders\AdapterProvider.cs" />
+    <Compile Include="AdapterProviders\DeferredSingleton.cs" />
+    <Compile Include="AdapterProviders\LazyAdapterProvider.cs" />
+    <Compile Include="AdapterProviders\ReflectionConstruction.cs" />
+    <Compile Include="AdapterProviders\ReflectionSolver.cs" />
     <Compile Include="Container.cs" />
     <Compile Include="AdapterProviders\FactoryAdapterProvider.cs" />
     <Compile Include="AdapterProviders\InstanceAdapterProvider.cs" />
